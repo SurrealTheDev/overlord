@@ -89,11 +89,11 @@ function main()
             end
         elseif v.etype=="NPC" then
             if v.group then
-               for i,v in workspace:GetChildren() do
-                    if  (v.target=="All" or v.Name == v.target) and v:WaitForChild("Left Arm") then
+               for i,v0 in workspace:GetChildren() do
+                    if  (v.target=="All" or v0.Name == v.target) and v:WaitForChild("Left Arm") then
                         local Arg = v.args
-                        Arg[1] = v
-                        Arg[4] = v:WaitForChild("Right Arm")
+                        Arg[1] = v0
+                        Arg[4] = v0:WaitForChild("Right Arm")
                         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                     end
                end
