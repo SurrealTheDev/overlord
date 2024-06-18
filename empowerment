@@ -90,7 +90,7 @@ function main()
         elseif v.etype=="NPC" then
             if v.group then
                for i,v0 in workspace:GetChildren() do
-                    if  (v.target=="All" or v0.Name == v.target) and v:WaitForChild("Left Arm") then
+                    if  (v.target=="All" or v0.Name == v.target) and (v0:WaitForChild("Right Arm")) then
                         local Arg = v.args
                         Arg[1] = v0
                         Arg[4] = v0:WaitForChild("Right Arm")
@@ -116,3 +116,4 @@ repeat
     main()
     wait(0.25)
 until exit
+
