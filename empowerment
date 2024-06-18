@@ -1,3 +1,99 @@
-    local notLoaded = Instance.new("Message")
-    notLoaded.Parent = COREGUI
-    notLoaded.Text = "Infinite Yield is waiting for the game to load"
+Players,RStorage,Builds = game:GetService("Players"), game:GetService("ReplicatedStorage"), workspace:WaitForChild("Engineer Builds")
+local me = Players.LocalPlayer
+local mouse = me:GetMouse()
+me:SetAttribute("TARGET","PlasmaUsersBad002");me:SetAttribute("TARGETTYPE","Player");me:SetAttribute("REPEAT",20);me:SetAttribute("GROUP",false);me:SetAttribute("CANCEL",false);
+local vZero = Vector3.new(0, 0, 0)
+trgtList = {}
+function fire()
+    local me = Players.LocalPlayer
+    local tSetting,rSetting,nSetting,gSetting = me:GetAttribute("TARGET"),me:GetAttribute("REPEAT"),me:GetAttribute("TARGETTYPE"),me:GetAttribute("GROUP")
+    local add = {target=tSetting,repeats = rSetting,etype = nSetting,group=gSetting}
+    if nSetting == "Player" then
+        add.args = {
+            [1] = workspace:WaitForChild(tSetting),
+            [2] = vZero,
+            [3] = 0,
+            [4] = Players:WaitForChild(tSetting).Character:FindFirstChild("Right Arm")
+        }
+        trgtList[tSetting]=add;
+    elseif nSetting == "Engi" then
+        add.args =  {
+            [1] =  workspace:WaitForChild("Engineer Builds"):WaitForChild("Build Model"):WaitForChild(tSetting),
+            [2] =  vZero,
+            [3] = 0,
+            [4] =  workspace:WaitForChild("Engineer Builds"):WaitForChild("Build Model"):WaitForChild(tSetting):WaitForChild("HumanoidRootPart")
+        }
+        trgtList[math.random(1,10000)]=add;
+    elseif nSetting == "NPC" then
+        add.args =  {
+            [1] =  workspace:WaitForChild(tSetting),
+            [2] =  vZero,
+            [3] = 0,
+            [4] =  workspace:WaitForChild(tSetting):WaitForChild("Right Arm")
+        }
+        trgtList[math.random(10001,20000)]=add;
+    end
+end
+function main()
+    for i,v in pairs(trgtList) do
+        v.repeats = v.repeats-1
+        if v.etype=="Player" then
+            if v.group and v.target=="All" then
+                for i,v in Players:GetPlayers() do
+                    local Arg = v.args
+                    Arg[1]=workspace:WaitForChild(v.Name)
+                    RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                end
+            else
+                local Arg = v.args
+                Arg[1]=workspace:WaitForChild(v.target)
+                RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+            end
+        elseif v.etype=="Engi" then
+            if v.group then
+               for i0,v0 in workspace:WaitForChild("Engineer Builds"):GetChildren() do
+                for i1,v1 in v0:GetChildren() do
+                    if (v.target=="All")or(v1.Name==v.target)  then
+                        local Arg = v.args
+                        Arg[1]=v1
+                        Arg[4]=v1:WaitForChild("HumanoidRootPart")
+                        RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                    end
+                end
+               end
+            else
+                local Arg = v.args
+                local bCh =  workspace:WaitForChild("Engineer Builds"):FindFirstChild("Build Model"):FindFirstChild(v.target)
+                Arg[1]=bCh
+                Arg[4]=bCh:WaitForChild("HumanoidRootPart")
+                RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+            end
+        elseif v.etype=="NPC" then
+            if v.group then
+               for i,v in workspace:GetChildren() do
+                    if  (v.target=="All" or v.Name == v.target) and v:WaitForChild("Left Arm") then
+                        local Arg = v.args
+                        Arg[1] = v
+                        Arg[4] = v:WaitForChild("Right Arm")
+                        RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                    end
+               end
+            else
+                local Arg = v.args
+                local nCh =  workspace:WaitForChild(v.target)
+                Arg[1] = nCh
+                Arg[4] = nCh:WaitForChild("Right Arm")
+                RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+            end
+        end
+        if v.repeats<=0 then
+            trgtList[i]=nil
+        end
+    end
+end
+mouse.Button2Down:Connect(fire)
+repeat
+    local exit = me:GetAttribute("CANCEL")
+    main()
+    wait(0.25)
+until exit
