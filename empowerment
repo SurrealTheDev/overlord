@@ -1,13 +1,28 @@
-Players,RStorage,Builds = game:GetService("Players"), game:GetService("ReplicatedStorage"), workspace:WaitForChild("Engineer Builds")
+Players = game:GetService("Players")
+RStorage = game:GetService("ReplicatedStorage")
+Builds = workspace:WaitForChild("Engineer Builds")
 local me = Players.LocalPlayer
 local mouse = me:GetMouse()
-me:SetAttribute("TARGET","PlasmaUsersBad002");me:SetAttribute("TARGETTYPE","Player");me:SetAttribute("REPEAT",20);me:SetAttribute("GROUP",false);me:SetAttribute("CANCEL",false);
+me:SetAttribute("TARGET","PlasmaUsersBad002");
+me:SetAttribute("TARGETTYPE","Player");
+me:SetAttribute("REPEAT",20);
+me:SetAttribute("GROUP",false);
+me:SetAttribute("CANCEL",false);
 local vZero = Vector3.new(0, 0, 0)
 trgtList = {}
+
 function fire()
     local me = Players.LocalPlayer
-    local tSetting,rSetting,nSetting,gSetting = me:GetAttribute("TARGET"),me:GetAttribute("REPEAT"),me:GetAttribute("TARGETTYPE"),me:GetAttribute("GROUP")
-    local add = {target=tSetting,repeats = rSetting,etype = nSetting,group=gSetting}
+    local tSetting = me:GetAttribute("TARGET")
+    local rSetting = me:GetAttribute("REPEAT")
+    local nSetting = me:GetAttribute("TARGETTYPE")
+    local gSetting = me:GetAttribute("GROUP")
+    local add = {
+        target=tSetting,
+        repeats = rSetting,
+        etype = nSetting,
+        group=gSetting
+    }
     if nSetting == "Player" then
         add.args = {
             [1] = workspace:WaitForChild(tSetting),
@@ -34,6 +49,7 @@ function fire()
         trgtList[math.random(10001,20000)]=add;
     end
 end
+
 function main()
     for i,v in pairs(trgtList) do
         v.repeats = v.repeats-1
@@ -97,3 +113,4 @@ repeat
     main()
     wait(0.25)
 until exit
+
