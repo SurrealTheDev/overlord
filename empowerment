@@ -25,26 +25,26 @@ function fire()
     }
     if nSetting == "Player" then
         add.args = {
-            [1] = workspace:WaitForChild(tSetting),
+            [1] = nil,
             [2] = vZero,
             [3] = 0,
-            [4] = Players:WaitForChild(tSetting).Character:FindFirstChild("Right Arm")
+            [4] = nil
         }
         trgtList[tSetting]=add;
     elseif nSetting == "Engi" then
         add.args =  {
-            [1] =  workspace:WaitForChild("Engineer Builds"):WaitForChild("Build Model"):WaitForChild(tSetting),
+            [1] =  nil,
             [2] =  vZero,
             [3] = 0,
-            [4] =  workspace:WaitForChild("Engineer Builds"):WaitForChild("Build Model"):WaitForChild(tSetting):WaitForChild("HumanoidRootPart")
+            [4] =  nil
         }
         trgtList[math.random(1,10000)]=add;
     elseif nSetting == "NPC" then
         add.args =  {
-            [1] =  workspace:WaitForChild(tSetting),
+            [1] = nil,
             [2] =  vZero,
             [3] = 0,
-            [4] =  workspace:WaitForChild(tSetting):WaitForChild("Right Arm")
+            [4] =  nil
         }
         trgtList[math.random(10001,20000)]=add;
     end
@@ -65,6 +65,7 @@ function main()
             else
                 local Arg = v.args
                 Arg[1]=workspace:WaitForChild(v.target)
+                Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                 RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
             end
         elseif v.etype=="Engi" then
