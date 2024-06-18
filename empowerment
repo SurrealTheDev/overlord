@@ -55,9 +55,9 @@ function main()
         v.repeats = v.repeats-1
         if v.etype=="Player" then
             if v.group and v.target=="All" then
-                for i,v in Players:GetPlayers() do
-                    local Arg = v.args
-                    Arg[1]=workspace:WaitForChild(v.Name)
+                for i0,v0 in Players:GetPlayers() do
+                    local Arg = v0.args
+                    Arg[1]=workspace:WaitForChild(v0.Name)
                     RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                 end
             else
@@ -86,11 +86,11 @@ function main()
             end
         elseif v.etype=="NPC" then
             if v.group then
-               for i,v in workspace:GetChildren() do
-                    if  (v.target=="All" or v.Name == v.target) and v:WaitForChild("Left Arm") then
+               for i0,v0 in workspace:GetChildren() do
+                    if  (v.target=="All" or v0.Name == v.target) and v:WaitForChild("Left Arm") then
                         local Arg = v.args
-                        Arg[1] = v
-                        Arg[4] = v:WaitForChild("Right Arm")
+                        Arg[1] = v0
+                        Arg[4] = v0:WaitForChild("Right Arm")
                         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                     end
                end
@@ -113,4 +113,3 @@ repeat
     main()
     wait(0.25)
 until exit
-
