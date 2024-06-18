@@ -57,7 +57,9 @@ function main()
             if v.group and v.target=="All" then
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
+                    
                     Arg[1]=workspace:WaitForChild(v0.Name)
+                    Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                 end
             else
