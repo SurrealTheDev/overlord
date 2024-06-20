@@ -121,7 +121,7 @@ function main()
             end
         elseif v.etype=="PKA" then
             local Arg = v.args
-            local mBody = workspace:WaitForChild(v.Name);
+            local mBody = workspace:WaitForChild(v.target);
             for i,v0 in Players:GetPlayers() do
                 if mBody.Name~=v0.Name then
                     local tBody = workspace:WaitForChild(v0.Name);
