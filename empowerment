@@ -123,7 +123,7 @@ function main()
         elseif v.etype=="PKA" then
             local mBody = workspace:WaitForChild(v.target);
             local myPos = workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame.Position;
-            local _,ty,_ = mBody.HumanoidRootPart.CFrame:ToEulerAngle();
+            local _,ty,_ = mBody.HumanoidRootPart.CFrame:ToEulerAnglesXYZ();
             local nCF = CFrame.fromEulerAnglesXYZ(0,ty,0) + myPos
             for i,v0 in Players:GetPlayers() do
                 if mBody.Name~=v0.Name then
