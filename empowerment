@@ -143,7 +143,7 @@ end
 function sqMag(V1,V2)
 
 
-    
+
     local nv = V2-V1
     local m =  (nv.X*nv.X)+(nv.Y*nv.Y)+(nv.Z+nv.Z)
     print("Squared distance is " .. m)
@@ -151,7 +151,7 @@ function sqMag(V1,V2)
 end
 
 function pPlayer(arg)
-    if (arg[1]:FindFirstChild("Right Arm").FindFirstChild("SelectionBox")==nil) then
+    if (arg[1]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
         print("Player has been punched!")
     else
