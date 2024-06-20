@@ -121,9 +121,9 @@ function main()
             end
         elseif v.etype=="PKA" then
             local Arg = v.args
-            local mBody = workspace:WaitForChild(v0.Name);
+            local mBody = workspace:WaitForChild(v.Name);
             for i,v0 in Players:GetPlayers() do
-                if v.target~=v0.Name then
+                if mBody.Name~=v0.Name then
                     local tBody = workspace:WaitForChild(v0.Name);
                     local pa = mBody.CFrame.Position
                     local pb = tBody.CFrame.Position
