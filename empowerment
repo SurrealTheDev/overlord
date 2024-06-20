@@ -9,6 +9,7 @@ me:SetAttribute("TARGETTYPE","PKA");
 me:SetAttribute("REPEAT",20);
 me:SetAttribute("KARADIUS",30);
 me:SetAttribute("GROUP",false);
+me:SetAttribute("ENABLED",true);
 me:SetAttribute("CANCEL",false);
 
 local vZero = Vector3.new(0, 0, 0)
@@ -121,6 +122,9 @@ function main()
             end
         elseif v.etype=="PKA" then
             local mBody = workspace:WaitForChild(v.target);
+            local myPos = workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame.Position;
+            local _,ty,_ = mBody.mBody.HumanoidRootPart.CFrame:ToEulerAngle();
+            local nCF = CFrame.fromEulerAnglesXYZ(0,ty,0) + myPos
             for i,v0 in Players:GetPlayers() do
                 if mBody.Name~=v0.Name then
                     local tBody = workspace:WaitForChild(v0.Name);
@@ -162,8 +166,10 @@ end
 local connection = mouse.Button2Down:Connect(fire)
 
 repeat
-    local exit = me:GetAttribute("CANCEL")
-    main()
+    local exit,enabled = me:GetAttribute("CANCEL"),me:GetAttribute("ENABLED")
+    if enabled then
+        main()
+    end
     wait(0.25)
 until exit
 connection:Disconnect();
