@@ -16,6 +16,7 @@ trgtList = {}
 
 
 function fire()
+    print("Firing")
     local me = Players.LocalPlayer
     local tSetting = me:GetAttribute("TARGET")
     local rSetting = me:GetAttribute("REPEAT")
@@ -153,7 +154,9 @@ function pPlayer(arg)
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
     end
 end
+
 mouse.Button2Down:Connect(fire)
+
 repeat
     local exit = me:GetAttribute("CANCEL")
     main()
