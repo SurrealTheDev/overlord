@@ -130,7 +130,7 @@ function main()
                     if sqMag(pa,pb)<=(v.radius*v.radius) then
                         local Arg = v.args
                         Arg[1]=tBody
-                        Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                        Arg[4]=Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                         pPlayer(Arg)
                     end
                 end
@@ -162,4 +162,4 @@ repeat
     main()
     wait(0.25)
 until exit
-
+print("Script ended")
