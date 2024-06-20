@@ -4,9 +4,9 @@ Builds = workspace:WaitForChild("Engineer Builds")
 local me = Players.LocalPlayer
 local mouse = me:GetMouse()
 
-me:SetAttribute("TARGET","None");
-me:SetAttribute("TARGETTYPE","PKA");
-me:SetAttribute("REPEAT",20);
+me:SetAttribute("TARGET","Jalepeno11713");
+me:SetAttribute("TARGETTYPE","Player");
+me:SetAttribute("REPEAT",0);
 me:SetAttribute("KARADIUS",30);
 me:SetAttribute("GROUP",false);
 me:SetAttribute("ENABLED",true);
@@ -124,16 +124,20 @@ function main()
             local mBody = workspace:WaitForChild(v.target);
             local myPos = workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame.Position;
             local _,ty,_ = mBody.HumanoidRootPart.CFrame:ToEulerAnglesXYZ();
-            local nCF = CFrame.fromEulerAnglesXYZ(0,ty,0) + myPos
+            workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame = CFrame.fromEulerAnglesXYZ(0,ty,0) + myPos
+            
             for i,v0 in Players:GetPlayers() do
                 if mBody.Name~=v0.Name then
                     local tBody = workspace:WaitForChild(v0.Name);
                     local pa = mBody.HumanoidRootPart.CFrame.Position
                     local pb = tBody.HumanoidRootPart.CFrame.Position
                     if sqMag(pa,pb)<=(v.radius*v.radius) then
-                        local Arg = v.args
-                        Arg[1]=tBody
-                        Arg[4]=Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                        local Arg =  {
+                            [1] = tBody,
+                            [2] =  vZero,
+                            [3] = 0,
+                            [4] =  Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                        }
                         pPlayer(Arg)
                     end
                 end
