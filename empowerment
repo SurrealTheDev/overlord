@@ -31,7 +31,7 @@ function fire()
         group = gSetting,
         radius = karSetting
     }
-    if nSetting == "Player" or nSetting == "P" then
+    if nSetting == "Player"then
         add.args = {
             [1] = nil,
             [2] = vZero,
@@ -127,7 +127,7 @@ function main()
                     local tBody = workspace:WaitForChild(v0.Name);
                     local pa = mBody.CFrame.Position
                     local pb = tBody.CFrame.Position
-                    if sqMag(pa,pb)<=v.radius then
+                    if sqMag(pa,pb)<=(v.radius*v.radius) then
                         local Arg = v.args
                         Arg[1]=tBody
                         Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
@@ -150,7 +150,7 @@ function sqMag(V1,V2)
 end
 
 function pPlayer(arg)
-    if arg[1]["Right Arm"].SelectionBox==nil or true then
+    if true then
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
     end
 end
