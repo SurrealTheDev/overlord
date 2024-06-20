@@ -18,6 +18,7 @@ trgtList = {}
 
 function fire()
     local me = Players.LocalPlayer
+    if not me:GetAttribute("ENABLED") then return end
     local tSetting = me:GetAttribute("TARGET")
     local rSetting = me:GetAttribute("REPEAT")
     local nSetting = me:GetAttribute("TARGETTYPE")
