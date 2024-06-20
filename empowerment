@@ -141,13 +141,10 @@ function main()
     end
 end
 function sqMag(V1,V2)
-    if V1:IsA("Vector3") and V2:IsA("Vector3") then
-        local nv = V2-V1
-        local m =  (nv.X*nv.X)+(nv.Y*nv.Y)+(nv.Z+nv.Z)
-        print("Squared distance is " .. m)
-        return m
-    end
-    return -1
+    local nv = V2-V1
+    local m =  (nv.X*nv.X)+(nv.Y*nv.Y)+(nv.Z+nv.Z)
+    print("Squared distance is " .. m)
+    return m
 end
 
 function pPlayer(arg)
