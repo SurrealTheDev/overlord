@@ -120,7 +120,6 @@ function main()
                 RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
             end
         elseif v.etype=="PKA" then
-            local Arg = v.args
             local mBody = workspace:WaitForChild(v.target);
             for i,v0 in Players:GetPlayers() do
                 if mBody.Name~=v0.Name then
@@ -150,7 +149,7 @@ function sqMag(V1,V2)
 end
 
 function pPlayer(arg)
-    if arg[1]["Right Arm"].SelectionBox==nil then
+    if arg[1]["Right Arm"].SelectionBox==nil or true then
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
     end
 end
