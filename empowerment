@@ -90,6 +90,12 @@ TargetGroupButton.TextColor3 = Color3.new(1, 1, 1)
 TargetGroupButton.Name = "Group Button"
 TargetGroupButton.Text = "Group : false"
 TargetGroupButton.Parent = MainWindow
+TargetGroupButton.ZIndex = 10
+TargetGroupButton.BackgroundTransparency = 1
+TargetGroupButton.BorderSizePixel = 0
+TargetGroupButton.TextXAlignment = Enum.TextXAlignment.Left
+TargetGroupButton.Font = Enum.Font.SourceSans
+TargetGroupButton.TextSize = 18
 
 TargetGroupButton.Activated:Connect(function()
     if GroupTarget then
