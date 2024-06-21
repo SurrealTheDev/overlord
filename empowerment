@@ -96,12 +96,12 @@ TargetGroupButton.BorderSizePixel = 0
 TargetGroupButton.TextXAlignment = Enum.TextXAlignment.Left
 TargetGroupButton.Font = Enum.Font.SourceSans
 TargetGroupButton.TextSize = 18
-
-TargetGroupButton.Activated:Connect(function()
+local function toggleGroupTarget()
     GroupTarget = not GroupTarget
     print("Group target set to ".. tostring(GroupTarget));
     TargetGroupButton.Text = "Group : "..tostring(GroupTarget)
-end)
+end
+TargetGroupButton.Activated:Connect(toggleGroupTarget)
 
 
 local me = Players.LocalPlayer
