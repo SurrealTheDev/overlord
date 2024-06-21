@@ -81,7 +81,7 @@ TargetGroupButton.Activated:Connect(function()
     else
         GroupTarget = false
     end
-    TargetGroupButton.Text = "Group : "..GroupTarget
+    TargetGroupButton.Text = "Group : "..tostring(GroupTarget)
 end)
 
 
