@@ -3,7 +3,7 @@ RStorage = game:GetService("ReplicatedStorage")
 Builds = workspace:WaitForChild("Engineer Builds")
 
 local Main = Instance.new("ScreenGui")
-Main.Name = "MX10284"
+Main.Name = "zXM10284"
 Main.Parent = game:GetService("CoreGui")
 
 MainWindow = Instance.new("Frame");
@@ -16,7 +16,7 @@ RepeatBox = Instance.new("TextBox");
 PKARadiusBox = Instance.new("TextBox");
 
 
-MainWindow.Name = "XM10285"
+MainWindow.Name = "zXM10285"
 MainWindow.Parent = Main
 MainWindow.Active = true
 MainWindow.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
@@ -85,7 +85,8 @@ PKARadiusBox.PlaceholderText = "PKA Radius"
 
 GroupTarget = false;
 TargetGroupButton.Position = UDim2.new(0,5,0,120)
-PKARadiusBox.Size = UDim2.new(0, 240, 0, 25)
+TargetGroupButton.Size = UDim2.new(0, 240, 0, 25)
+TargetGroupButton.TextColor3 = Color3.new(1, 1, 1)
 TargetGroupButton.Name = "Group Button"
 TargetGroupButton.Text = "Group : false"
 TargetGroupButton.Parent = MainWindow
@@ -179,10 +180,12 @@ function main()
                     pPlayer(Arg)
                 end
             else
-                local Arg = v.args
-                Arg[1]=workspace:WaitForChild(v.target)
-                Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
-                pPlayer(Arg)
+                if (Players:FindFirstChild(v.target) and workspace:FindFirstChild(v.target))~=nil then
+                    local Arg = v.args
+                    Arg[1]=workspace:WaitForChild(v.target)
+                    Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
+                    pPlayer(Arg)
+                end
             end
         elseif v.etype=="Engi" then
             if v.group then
