@@ -1,6 +1,90 @@
 Players = game:GetService("Players")
 RStorage = game:GetService("ReplicatedStorage")
 Builds = workspace:WaitForChild("Engineer Builds")
+
+local Main = Instance.new("ScreenGui")
+Main.Name = "MX10284"
+Main.Parent = game:GetService("CoreGui")
+
+MainWindow = Instance.new("Frame");
+TargetBox = Instance.new("TextBox");
+TargetGroupButton = Instance.new("TextButton");
+EnableButton = Instance.new("TextButton");
+CancelButton = Instance.new("TextButton");
+TargetTypeBox = Instance.new("TextBox");
+PKARadiusBox = Instance.new("TextBox");
+
+
+MainWindow.Name = "XM10285"
+MainWindow.Parent = Main
+MainWindow.Active = true
+MainWindow.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+MainWindow.BorderSizePixel = 0
+MainWindow.Position = UDim2.new(1, -250, 1, -220)
+MainWindow.Size = UDim2.new(0, 250, 0, 220)
+MainWindow.ZIndex = 10
+
+TargetBox.Name = "TrgtBox"
+TargetBox.Parent = MainWindow
+TargetBox.BackgroundTransparency = 1
+TargetBox.BorderSizePixel = 0
+TargetBox.Position = UDim2.new(0, 5, 0, 20)
+TargetBox.Size = UDim2.new(0, 240, 0, 25)
+TargetBox.Font = Enum.Font.SourceSans
+TargetBox.TextSize = 18
+TargetBox.TextXAlignment = Enum.TextXAlignment.Left
+TargetBox.TextColor3 = Color3.new(1, 1, 1)
+TargetBox.Text = ""
+TargetBox.ZIndex = 10
+TargetBox.PlaceholderText = "Target"
+
+TargetTypeBox.Name = "TrgtTypeBox"
+TargetTypeBox.Parent = MainWindow
+TargetTypeBox.BackgroundTransparency = 1
+TargetTypeBox.BorderSizePixel = 0
+TargetTypeBox.Position = UDim2.new(0, 5, 0, 45)
+TargetTypeBox.Size = UDim2.new(0, 240, 0, 25)
+TargetTypeBox.Font = Enum.Font.SourceSans
+TargetTypeBox.TextSize = 18
+TargetTypeBox.TextXAlignment = Enum.TextXAlignment.Left
+TargetTypeBox.TextColor3 = Color3.new(1, 1, 1)
+TargetTypeBox.Text = "Player"
+TargetTypeBox.ZIndex = 10
+TargetTypeBox.PlaceholderText = "Target Type"
+
+PKARadiusBox.Name = "PKARadiusBox"
+PKARadiusBox.Parent = MainWindow
+PKARadiusBox.BackgroundTransparency = 1
+PKARadiusBox.BorderSizePixel = 0
+PKARadiusBox.Position = UDim2.new(0, 5, 0, 70)
+PKARadiusBox.Size = UDim2.new(0, 240, 0, 25)
+PKARadiusBox.Font = Enum.Font.SourceSans
+PKARadiusBox.TextSize = 18
+PKARadiusBox.TextXAlignment = Enum.TextXAlignment.Left
+PKARadiusBox.TextColor3 = Color3.new(1, 1, 1)
+PKARadiusBox.Text = "20"
+PKARadiusBox.ZIndex = 10
+PKARadiusBox.PlaceholderText = "PKA Radius"
+
+
+
+GroupTarget = false;
+TargetGroupButton.Position = UDim2.new(0,5,0,95)
+TargetGroupButton.Size = UDim2.new(1,-10,0,25)
+TargetGroupButton.Name = "Group Button"
+TargetGroupButton.Text = "Group : false"
+TargetGroupButton.Parent = MainWindow
+
+TargetGroupButton.Activated:Connect(function()
+    if GroupTarget then
+        GroupTarget = true
+    else
+        GroupTarget = false
+    end
+    TargetGroupButton.Text = "Group : "..GroupTarget
+end)
+
+
 local me = Players.LocalPlayer
 local mouse = me:GetMouse()
 
