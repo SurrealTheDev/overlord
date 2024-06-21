@@ -12,6 +12,7 @@ TargetGroupButton = Instance.new("TextButton");
 EnableButton = Instance.new("TextButton");
 CancelButton = Instance.new("TextButton");
 TargetTypeBox = Instance.new("TextBox");
+RepeatBox = Instance.new("TextBox");
 PKARadiusBox = Instance.new("TextBox");
 
 
@@ -52,11 +53,25 @@ TargetTypeBox.Text = "Player"
 TargetTypeBox.ZIndex = 10
 TargetTypeBox.PlaceholderText = "Target Type"
 
+RepeatBox.Name = "PKARadiusBox"
+RepeatBox.Parent = MainWindow
+RepeatBox.BackgroundTransparency = 1
+RepeatBox.BorderSizePixel = 0
+RepeatBox.Position = UDim2.new(0, 5, 0, 70)
+RepeatBox.Size = UDim2.new(0, 240, 0, 25)
+RepeatBox.Font = Enum.Font.SourceSans
+RepeatBox.TextSize = 18
+RepeatBox.TextXAlignment = Enum.TextXAlignment.Left
+RepeatBox.TextColor3 = Color3.new(1, 1, 1)
+RepeatBox.Text = "1"
+RepeatBox.ZIndex = 10
+RepeatBox.PlaceholderText = "PKA Radius"
+
 PKARadiusBox.Name = "PKARadiusBox"
 PKARadiusBox.Parent = MainWindow
 PKARadiusBox.BackgroundTransparency = 1
 PKARadiusBox.BorderSizePixel = 0
-PKARadiusBox.Position = UDim2.new(0, 5, 0, 70)
+PKARadiusBox.Position = UDim2.new(0, 5, 0, 95)
 PKARadiusBox.Size = UDim2.new(0, 240, 0, 25)
 PKARadiusBox.Font = Enum.Font.SourceSans
 PKARadiusBox.TextSize = 18
@@ -69,7 +84,7 @@ PKARadiusBox.PlaceholderText = "PKA Radius"
 
 
 GroupTarget = false;
-TargetGroupButton.Position = UDim2.new(0,5,0,95)
+TargetGroupButton.Position = UDim2.new(0,5,0,120)
 TargetGroupButton.Size = UDim2.new(1,-10,0,25)
 TargetGroupButton.Name = "Group Button"
 TargetGroupButton.Text = "Group : false"
@@ -103,10 +118,10 @@ trgtList = {}
 function fire()
     local me = Players.LocalPlayer
     if not me:GetAttribute("ENABLED") then return end
-    local tSetting = me:GetAttribute("TARGET")
-    local rSetting = me:GetAttribute("REPEAT")
-    local nSetting = me:GetAttribute("TARGETTYPE")
-    local gSetting = me:GetAttribute("GROUP")
+    local tSetting = TargetBox.Text
+    local rSetting = tonumber(RepeatBox.Text)
+    local nSetting = TargetTypeBox.Text
+    local gSetting = GroupTarget
     local karSetting = me:GetAttribute("KARADIUS")
     if rSetting<=0 then return end
     local add = {
