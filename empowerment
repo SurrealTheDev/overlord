@@ -9,7 +9,7 @@ Main.Parent = game:GetService("CoreGui")
 MainWindow = Instance.new("Frame");
 TargetBox = Instance.new("TextBox");
 TargetGroupButton = Instance.new("TextButton");
-EnableButton = Instance.new("TextButton");
+TEnableButton = Instance.new("TextButton");
 CancelButton = Instance.new("TextButton");
 TargetTypeBox = Instance.new("TextBox");
 RepeatBox = Instance.new("TextBox");
@@ -103,16 +103,29 @@ local function toggleGroupTarget()
 end
 TargetGroupButton.Activated:Connect(toggleGroupTarget)
 
+TEnabled = true;
+TEnableButton.Position = UDim2.new(0,5,0,145)
+TEnableButton.Size = UDim2.new(0, 240, 0, 25)
+TEnableButton.TextColor3 = Color3.new(1, 1, 1)
+TEnableButton.Name = "Enable Button"
+TEnableButton.Text = "Enabled : true"
+TEnableButton.Parent = MainWindow
+TEnableButton.ZIndex = 10
+TEnableButton.BackgroundTransparency = 1
+TEnableButton.BorderSizePixel = 0
+TEnableButton.TextXAlignment = Enum.TextXAlignment.Left
+TEnableButton.Font = Enum.Font.SourceSans
+TEnableButton.TextSize = 18
+local function toggleEnable()
+    GroupTarget = not GroupTarget
+    TargetGroupButton.Text = "Enabled : "..tostring(GroupTarget)
+end
+TEnableButton.Activated:Connect(toggleEnable)
+
 
 local me = Players.LocalPlayer
 local mouse = me:GetMouse()
 
-me:SetAttribute("TARGET","Jalepeno11713");
-me:SetAttribute("TARGETTYPE","Player");
-me:SetAttribute("REPEAT",0);
-me:SetAttribute("KARADIUS",30);
-me:SetAttribute("GROUP",false);
-me:SetAttribute("ENABLED",true);
 me:SetAttribute("CANCEL",false);
 
 local vZero = Vector3.new(0, 0, 0)
@@ -121,12 +134,12 @@ trgtList = {}
 
 function fire()
     local me = Players.LocalPlayer
-    if not me:GetAttribute("ENABLED") then return end
+    if not TEnabled then return end
     local tSetting = TargetBox.Text
     local rSetting = tonumber(RepeatBox.Text)
     local nSetting = TargetTypeBox.Text
     local gSetting = GroupTarget
-    local karSetting = me:GetAttribute("KARADIUS")
+    local karSetting = tonumber(PKARadiusBox.Text)
     if rSetting<=0 then return end
     local add = {
         target = tSetting,
@@ -278,8 +291,8 @@ end
 local connection = mouse.Button2Down:Connect(fire)
 
 repeat
-    local exit,enabled = me:GetAttribute("CANCEL"),me:GetAttribute("ENABLED")
-    if enabled then
+    local exit = me:GetAttribute("CANCEL")
+    if TEnabled then
         main()
     end
     wait(0.25)
