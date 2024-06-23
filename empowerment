@@ -1,6 +1,6 @@
 Players = game:GetService("Players")
 RStorage = game:GetService("ReplicatedStorage")
-Builds = workspace:WaitForChild("Engineer Builds")
+Builds = workspace:FindFirstChild("Engineer Builds")
 
 local Main = Instance.new("ScreenGui")
 Main.Name = "zXM10284"
@@ -53,7 +53,7 @@ TargetTypeBox.Text = "Player"
 TargetTypeBox.ZIndex = 10
 TargetTypeBox.PlaceholderText = "Target Type"
 
-RepeatBox.Name = "PKARadiusBox"
+RepeatBox.Name = "RepeatBox"
 RepeatBox.Parent = MainWindow
 RepeatBox.BackgroundTransparency = 1
 RepeatBox.BorderSizePixel = 0
@@ -65,7 +65,7 @@ RepeatBox.TextXAlignment = Enum.TextXAlignment.Left
 RepeatBox.TextColor3 = Color3.new(1, 1, 1)
 RepeatBox.Text = "1"
 RepeatBox.ZIndex = 10
-RepeatBox.PlaceholderText = "PKA Radius"
+RepeatBox.PlaceholderText = "Repeat#"
 
 PKARadiusBox.Name = "PKARadiusBox"
 PKARadiusBox.Parent = MainWindow
