@@ -225,7 +225,7 @@ function main()
         elseif v.etype=="NPC" then
             if v.group then
                for i,v0 in workspace:GetChildren() do
-                    if  (v.target=="All" or v0.Name == v.target) and (Players.FindFirstChild(v0.Name)==nil) then
+                    if  (v.target=="All" or v0.Name == v.target) and (Players:FindFirstChild(v0.Name)==nil) then
                         local Arg = v.args
                         Arg[1] = v0
                         Arg[4] = v0:WaitForChild("Torso")
@@ -233,11 +233,13 @@ function main()
                     end
                end
             else
-                local Arg = v.args
-                local nCh =  workspace:WaitForChild(v.target)
-                Arg[1] = nCh
-                Arg[4] = nCh:WaitForChild("Torso")
-                RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                local nCh =  workspace:FindFirstChild(v.target)
+                if nCh~=nil then
+                    local Arg = v.args
+                    Arg[1] = nCh
+                    Arg[4] = nCh:WaitForChild("Torso")
+                    RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                end
             end
         elseif v.etype=="PKA" then
             local mBody = workspace:FindFirstChild(v.target);
