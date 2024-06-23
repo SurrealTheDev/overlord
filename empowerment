@@ -212,7 +212,7 @@ function main()
         elseif v.etype=="NPC" then
             if v.group then
                for i,v0 in workspace:GetChildren() do
-                    if  (v.target=="All" or v0.Name == v.target) and (v0:FindFirstChild("AnimSaves")) then
+                    if  (v.target=="All" or v0.Name == v.target) and (Players.FindFirstChild(v0.Name)==nil) then
                         local Arg = v.args
                         Arg[1] = v0
                         Arg[4] = v0:WaitForChild("Torso")
@@ -227,26 +227,28 @@ function main()
                 RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
             end
         elseif v.etype=="PKA" then
-            local mBody = workspace:WaitForChild(v.target);
-            local myPos = workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame.Position;
-            local _,ty,_ = mBody.HumanoidRootPart.CFrame:ToEulerAnglesXYZ();
-            workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame = CFrame.fromEulerAnglesXYZ(0,ty,0) + myPos
-            
-            for i,v0 in Players:GetPlayers() do
-                if mBody.Name~=v0.Name then
-                    local tBody = workspace:WaitForChild(v0.Name);
-                    local pa = mBody.HumanoidRootPart.CFrame.Position
-                    local pb = tBody.HumanoidRootPart.CFrame.Position
-                    if sqMag(pa,pb)<=(v.radius*v.radius) then
-                        local Arg =  {
-                            [1] = tBody,
-                            [2] =  vZero,
-                            [3] = 0,
-                            [4] =  Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
-                        }
-                        pPlayer(Arg)
+            local mBody = workspace:FindFirstChild(v.target);
+            if mBody~=nil then
+                local myPos = workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame.Position;
+                local _,ty,_ = mBody.HumanoidRootPart.CFrame:ToEulerAnglesXYZ();
+                workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame = CFrame.fromEulerAnglesXYZ(0,ty,0) + myPos
+                
+                for i,v0 in Players:GetPlayers() do
+                    if mBody.Name~=v0.Name then
+                        local tBody = workspace:WaitForChild(v0.Name);
+                        local pa = mBody.HumanoidRootPart.CFrame.Position
+                        local pb = tBody.HumanoidRootPart.CFrame.Position
+                        if sqMag(pa,pb)<=(v.radius*v.radius) then
+                            local Arg =  {
+                                [1] = tBody,
+                                [2] =  vZero,
+                                [3] = 0,
+                                [4] =  Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                            }
+                            pPlayer(Arg)
+                        end
                     end
-                end
+                end 
             end
         end
         if v.repeats<=0 then
@@ -259,7 +261,7 @@ function sqMag(V1,V2)
 
 
     local nv = V2-V1
-    local m =  (nv.X*nv.X)+(nv.Y*nv.Y)+(nv.Z+nv.Z)
+    local m =  (nv.X*nv.X)+(nv.Y*nv.Y)+(nv.Z*nv.Z)
     print("Squared distance is " .. m)
     return m
 end
