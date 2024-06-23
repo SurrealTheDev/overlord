@@ -226,10 +226,13 @@ function main()
             if v.group then
                for i,v0 in workspace:GetChildren() do
                     if  (v.target=="All" or v0.Name == v.target) and (Players:FindFirstChild(v0.Name)==nil) then
-                        local Arg = v.args
-                        Arg[1] = v0
-                        Arg[4] = v0:WaitForChild("Torso")
-                        RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                        local torso = v0:FindFirstChild("Torso")
+                        if torso~=nil then
+                            local Arg = v.args
+                            Arg[1] = v0
+                            Arg[4] = torso
+                            RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
+                        end
                     end
                end
             else
