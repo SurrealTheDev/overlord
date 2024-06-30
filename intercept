@@ -1,0 +1,145 @@
+local origin
+local newf
+
+
+
+local LimitDisplay = {}
+local LimitDisplay2 = {}
+
+local isA = game.IsA
+local function blankfunction(...)
+    return ...
+end
+
+local function recurse(i,func,...)
+    if i>1 then recurse(i-1,...) end
+    return func(...)
+end
+
+local mblacklist = {
+    "IsA",
+    "WaitForChild",
+    "FindFirstChild",
+    "GetChildren",
+    "LoadAnimation",
+    "ViewportPointToRay",
+    "Play",
+    "Stop",
+    "Destroy",
+    "GetState",
+    "GetCameraYInvertValue",
+    "IsDescendantOf",
+    "TweenPosition",
+    "TweenSizeAndPosition",
+    "InvokeChatCallback",
+    "GetTextSize",
+    "GetPlayers",
+    "GetService",
+    "GetPlayerByUserId",
+    "InvokeChatCallback",
+    "IsFriendsWith",
+    "IsFocused",
+    "tdump",
+    "newf"
+}
+local rblacklist = {
+    "ChatBubble ",
+    "MessagesChanged",
+    "WalkAnim",
+    "ClimbAnim",
+}
+
+local function nbModule(m,r,a)
+    if m=="FireServer" and r=="Evemt" and a[1]=="shootRifle"  then
+        return true
+    end
+    return false
+end
+
+local cloneref = cloneref or blankfunction
+local newcclosure = newcclosure or blankfunction
+local clonefunction = clonefunction or blankfunction
+local OldDebugId = game.GetDebugId
+local GetDebugIdHandler = Instance.new("BindableFunction",Storage) 
+local GetDebugIDInvoke = GetDebugIdHandler.Invoke
+
+function GetDebugIdHandler.OnInvoke(obj: Instance) -- To avoid having to set thread identity and ect
+    return OldDebugId(obj)
+end
+
+local function ThreadGetDebugId(obj: Instance): string 
+    return GetDebugIDInvoke(GetDebugIdHandler,obj) -- indexing to avoid having to setnamecall later
+end
+
+local function tdump(o)
+    if type(o) == 'table' then
+       local s = '{ '
+       for k,v in pairs(o) do
+            if type(k) ~= 'number' then k = '"'..k..'"' end
+            s = s .. '---['..k..'] = ' .. tdump(v)
+            if typeof(v)=="Instance" then
+                s=s.." - Name : ".. tostring(v.Name)
+            end
+            s = s.. '\n'
+       end
+       return s .. '} '
+    else
+       return tostring(o)
+    end
+ end 
+
+local hfunc = newcclosure(function(...)
+    local method = getnamecallmethod()
+    if typeof(...)=="Instance" and table.find(mblacklist,method)==nil then
+        local remote = cloneref(...)
+        if table.find(rblacklist,tostring(remote))~=nil then return newf(...) end
+        local id = ThreadGetDebugId(remote)
+        local args = {select(2,...)}
+        local nid = tostring(remote).."---"..tostring(method)
+        local out = ""
+        if LimitDisplay[nid]==nil and ((LimitDisplay2[nid] or 0)<=10) then
+            print("> "..nid);
+            out=out.."Remote - "..tostring(remote).."\nId - "..tostring(id).."\nMethod - "..tostring(method).."\nArgs:\n"
+            for i,v in pairs(args) do
+                if typeof(v)=="table" then
+                    out = out..tdump(v)
+                else
+                    out=out.."--["..tostring(i).."] : "..tostring(v)
+                    if typeof(v)=="Instance" then
+                        out=out.." - Name : ".. tostring(v.Name)
+                    end
+                end
+                out=out.."\n"
+            end
+            LimitDisplay[nid]=1;
+            LimitDisplay2[nid]=((LimitDisplay2[nid] or 0) + 1);
+            local rout = newf(...)
+            out=out..tdump(rout);
+            print(out.."\n")
+            if method=="UserHasBadgeAsync" then rout = true;print("HEHEHEHE") end
+            return rout;
+        end 
+    end
+    if false and (method=="fireServer" or method=="FireServer" or method =="invokeServer" or method == "InvokeServer") then
+        if typeof(...)=="Instance" then
+            if isA(remote,"RemoteEvent") or isA(remote,"RemoteFunction") then  
+
+            end
+        end
+    end
+    return newf(...)
+end
+)
+origin = hookmetamethod(game,"__namecall", clonefunction(hfunc))
+newf = newf or function(...)
+    return  origin(...)
+end
+while true do
+    for i,v in pairs(LimitDisplay) do
+        LimitDisplay[i]-=0.1
+        if v<=0 then
+            LimitDisplay[i]=nil
+        end
+    end
+    wait(0.1)
+end
