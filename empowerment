@@ -14,6 +14,7 @@ CancelButton = Instance.new("TextButton");
 TargetTypeBox = Instance.new("TextBox");
 RepeatBox = Instance.new("TextBox");
 PKARadiusBox = Instance.new("TextBox");
+CClearButton = Instance.new("TextButton");
 
 
 MainWindow.Name = "zXM10285"
@@ -122,6 +123,29 @@ local function toggleEnable()
 end
 TEnableButton.Activated:Connect(toggleEnable)
 
+activeCount = 0;
+CClearButton.Position = UDim2.new(0,5,0,170)
+CClearButton.Size = UDim2.new(0, 240, 0, 25)
+CClearButton.TextColor3 = Color3.new(1, 1, 1)
+CClearButton.Name = "Clear Button"
+CClearButton.Text = "Clear (0)"
+CClearButton.Parent = MainWindow
+CClearButton.ZIndex = 10
+CClearButton.BackgroundTransparency = 1
+CClearButton.BorderSizePixel = 0
+CClearButton.TextXAlignment = Enum.TextXAlignment.Left
+CClearButton.Font = Enum.Font.SourceSans
+CClearButton.TextSize = 18
+local function toggleEnable()
+    trgtList = {};
+    activeCount=0
+    updateActiveCount();
+end
+TEnableButton.Activated:Connect(toggleEnable)
+
+function updateActiveCount()
+    CClearButton.Text = "Clear ("..tostring(activeCount)..")"
+end
 
 local me = Players.LocalPlayer
 local mouse = me:GetMouse()
@@ -155,6 +179,7 @@ function fire()
             [3] = 0,
             [4] = nil
         }
+        if trgtList[tSetting]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[tSetting]=add;
     elseif nSetting == "Engi" then
         add.args =  {
@@ -163,6 +188,7 @@ function fire()
             [3] = 0,
             [4] =  nil
         }
+        if trgtList[(tSetting.." - engi")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - engi")]=add;
     elseif nSetting == "NPC" then
         add.args =  {
@@ -171,6 +197,7 @@ function fire()
             [3] = 0,
             [4] =  nil
         }
+        if trgtList[(tSetting.." - npc")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - npc")]=add;
     elseif nSetting == "PKA" then
         add.args =  {
@@ -179,6 +206,7 @@ function fire()
             [3] = 0,
             [4] =  nil
         }
+        if trgtList[(tSetting.." w ka")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." w ka")]=add;
     end
 end
@@ -203,7 +231,24 @@ function main()
                     pPlayer(Arg)
                 end
             end
-        elseif v.etype=="Engi" then
+            elseif v.etype=="Ability" then
+                if v.group and v.target=="All" then
+                    for i,v0 in Players:GetPlayers() do
+                        local Arg = v.args
+                        
+                        Arg[1]=workspace:WaitForChild(v0.Name)
+                        Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                        pPlayer(Arg)
+                    end
+                else
+                    if (Players:FindFirstChild(v.target) and workspace:FindFirstChild(v.target))~=nil then
+                        local Arg = v.args
+                        Arg[1]=workspace:WaitForChild(v.target)
+                        Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
+                        pPlayer(Arg)
+                    end
+                end
+            elseif v.etype=="Engi" then
             if v.group then
                for i0,v0 in workspace:WaitForChild("Engineer Builds"):GetChildren() do
                 for i1,v1 in v0:GetChildren() do
@@ -270,6 +315,8 @@ function main()
             end
         end
         if v.repeats<=0 then
+            activeCount = activeCount-1;
+            updateActiveCount()
             trgtList[i]=nil
         end
     end
