@@ -141,7 +141,7 @@ local function toggleEnable()
     activeCount=0
     updateActiveCount();
 end
-TEnableButton.Activated:Connect(toggleEnable)
+CClearButton.Activated:Connect(toggleEnable)
 
 function updateActiveCount()
     CClearButton.Text = "Clear ("..tostring(activeCount)..")"
