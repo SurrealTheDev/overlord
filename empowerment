@@ -161,7 +161,7 @@ function fire()
     if not TEnabled then return end
     local tSetting = TargetBox.Text
     local rSetting = tonumber(RepeatBox.Text)
-    local nSetting = TargetTypeBox.Text
+    local nSetting = string.lower(TargetTypeBox.Text)
     local gSetting = GroupTarget
     local karSetting = tonumber(PKARadiusBox.Text)
     if rSetting<=0 then return end
@@ -170,9 +170,20 @@ function fire()
         repeats = rSetting,
         etype = nSetting,
         group = gSetting,
-        radius = karSetting
+        radius = karSetting,
+        valid=true
     }
-    if nSetting == "Player"then
+    if nSetting == "player" or nSetting == "p" then
+        if not (gSetting and tSetting=="All") then
+            add.valid=false
+            for i,v in Players:GetPlayers() do
+                if string.match(v.Name,tSetting)~=nil then
+                    add.target = v.Name
+                    add.valid=true
+                    break
+                end
+            end
+        end
         add.args = {
             [1] = nil,
             [2] = vZero,
@@ -181,7 +192,16 @@ function fire()
         }
         if trgtList[tSetting]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[tSetting]=add;
-    elseif nSetting == "Engi" then
+    elseif nSetting == "ability" or nSetting == "a" then
+        add.args =  {
+            [1] =  nil,
+            [2] =  vZero,
+            [3] = 0,
+            [4] =  nil
+        }
+        if trgtList[(tSetting.." - ability")]==nil then activeCount = activeCount+1;updateActiveCount() end
+        trgtList[(tSetting.." - ability")]=add;
+    elseif nSetting == "engi" or nSetting == "e" then
         add.args =  {
             [1] =  nil,
             [2] =  vZero,
@@ -190,7 +210,7 @@ function fire()
         }
         if trgtList[(tSetting.." - engi")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - engi")]=add;
-    elseif nSetting == "NPC" then
+    elseif nSetting == "npc" or nSetting == "n" then
         add.args =  {
             [1] = nil,
             [2] =  vZero,
@@ -199,7 +219,7 @@ function fire()
         }
         if trgtList[(tSetting.." - npc")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - npc")]=add;
-    elseif nSetting == "PKA" then
+    elseif nSetting == "pka" then
         add.args =  {
             [1] = nil,
             [2] =  vZero,
@@ -214,7 +234,25 @@ end
 function main()
     for i,v in pairs(trgtList) do
         v.repeats = v.repeats-1
-        if v.etype=="Player" then
+        local etype = v.etype
+        if etype=="player" or etype == "p" then
+            if v.group and v.target=="All" then
+                for i,v0 in Players:GetPlayers() do
+                    local Arg = v.args
+                    
+                    Arg[1]=workspace:WaitForChild(v0.Name)
+                    Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                    pPlayer(Arg)
+                end
+            else
+                if v.valid then
+                    local Arg = v.args
+                    Arg[1]=workspace:WaitForChild(v.target)
+                    Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
+                    pPlayer(Arg)
+                end
+            end
+        elseif etype=="ability" or etype == "a" then
             if v.group and v.target=="All" then
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
@@ -231,24 +269,7 @@ function main()
                     pPlayer(Arg)
                 end
             end
-            elseif v.etype=="Ability" then
-                if v.group and v.target=="All" then
-                    for i,v0 in Players:GetPlayers() do
-                        local Arg = v.args
-                        
-                        Arg[1]=workspace:WaitForChild(v0.Name)
-                        Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
-                        pPlayer(Arg)
-                    end
-                else
-                    if (Players:FindFirstChild(v.target) and workspace:FindFirstChild(v.target))~=nil then
-                        local Arg = v.args
-                        Arg[1]=workspace:WaitForChild(v.target)
-                        Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
-                        pPlayer(Arg)
-                    end
-                end
-            elseif v.etype=="Engi" then
+        elseif etype=="engi" or etype=="e" then
             if v.group then
                for i0,v0 in workspace:WaitForChild("Engineer Builds"):GetChildren() do
                 for i1,v1 in v0:GetChildren() do
@@ -267,7 +288,7 @@ function main()
                 Arg[4]=bCh:WaitForChild("HumanoidRootPart")
                 RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
             end
-        elseif v.etype=="NPC" then
+        elseif etype=="npc" or etype=="n" then
             if v.group then
                for i,v0 in workspace:GetChildren() do
                     if  (v.target=="All" or v0.Name == v.target) and (Players:FindFirstChild(v0.Name)==nil) then
@@ -289,7 +310,7 @@ function main()
                     RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                 end
             end
-        elseif v.etype=="PKA" then
+        elseif etype=="pka" then
             local mBody = workspace:FindFirstChild(v.target);
             if mBody~=nil then
                 local myPos = workspace:WaitForChild(me.Name).HumanoidRootPart.CFrame.Position;
