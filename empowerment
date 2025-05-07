@@ -221,10 +221,11 @@ function fire()
         trgtList[(tSetting.." - npc")]=add;
     elseif nSetting == "pka" then
         add.args =  {
-            [1] = nil,
-            [2] =  vZero,
-            [3] = 0,
-            [4] =  nil
+            [1] = 1,
+            [2] = nil,
+            [3] =  vZero,
+            [4] = 0,
+            [5] =  nil
         }
         if trgtList[(tSetting.." w ka")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." w ka")]=add;
@@ -240,15 +241,16 @@ function main()
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
                     
-                    Arg[1]=workspace:WaitForChild(v0.Name)
-                    Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                    Arg[2]=workspace:WaitForChild(v0.Name)
+                    Arg[5] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
+                    
                 end
             else
                 if v.valid then
                     local Arg = v.args
-                    Arg[1]=workspace:WaitForChild(v.target)
-                    Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
+                    Arg[2]=workspace:WaitForChild(v.target)
+                    Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
             end
@@ -257,15 +259,15 @@ function main()
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
                     
-                    Arg[1]=workspace:WaitForChild(v0.Name)
-                    Arg[4] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                    Arg[2]=workspace:WaitForChild(v0.Name)
+                    Arg[5] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
             else
                 if (Players:FindFirstChild(v.target) and workspace:FindFirstChild(v.target))~=nil then
                     local Arg = v.args
-                    Arg[1]=workspace:WaitForChild(v.target)
-                    Arg[4] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
+                    Arg[2]=workspace:WaitForChild(v.target)
+                    Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
             end
@@ -284,8 +286,8 @@ function main()
             else
                 local Arg = v.args
                 local bCh =  workspace:WaitForChild("Engineer Builds"):FindFirstChild("Build Model"):FindFirstChild(v.target)
-                Arg[1]=bCh
-                Arg[4]=bCh:WaitForChild("HumanoidRootPart")
+                Arg[2]=bCh
+                Arg[5]=bCh:WaitForChild("HumanoidRootPart")
                 RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
             end
         elseif etype=="npc" or etype=="n" then
@@ -295,8 +297,8 @@ function main()
                         local torso = v0:FindFirstChild("Torso")
                         if torso~=nil then
                             local Arg = v.args
-                            Arg[1] = v0
-                            Arg[4] = torso
+                            Arg[2] = v0
+                            Arg[5] = torso
                             RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                         end
                     end
@@ -305,8 +307,8 @@ function main()
                 local nCh =  workspace:FindFirstChild(v.target)
                 if nCh~=nil then
                     local Arg = v.args
-                    Arg[1] = nCh
-                    Arg[4] = nCh:WaitForChild("Torso")
+                    Arg[2] = nCh
+                    Arg[5] = nCh:WaitForChild("Torso")
                     RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                 end
             end
@@ -324,10 +326,11 @@ function main()
                         local pb = tBody.HumanoidRootPart.CFrame.Position
                         if sqMag(pa,pb)<=(v.radius*v.radius) then
                             local Arg =  {
-                                [1] = tBody,
-                                [2] =  vZero,
-                                [3] = 0,
-                                [4] =  Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
+                                [1] = 1,
+                                [2] = tBody,
+                                [3] =  vZero,
+                                [4] = 0,
+                                [5] =  Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                             }
                             pPlayer(Arg)
                         end
