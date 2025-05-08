@@ -281,8 +281,8 @@ function main()
                 for i1,v1 in v0:GetChildren() do
                     if (v.target=="All")or(v1.Name==v.target)  then
                         local Arg = v.args
-                        Arg[1]=v1
-                        Arg[4]=v1:WaitForChild("HumanoidRootPart")
+                        Arg[2]=v1
+                        Arg[5]=v1:WaitForChild("HumanoidRootPart")
                         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(Arg))
                     end
                 end
@@ -360,7 +360,7 @@ function sqMag(V1,V2)
 end
 
 function pPlayer(arg)
-    if (arg[1]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
+    if (arg[2]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
         print("Player has been punched!")
     else
@@ -375,7 +375,7 @@ repeat
     if TEnabled then
         main()
     end
-    wait(0.25)
+    wait(0.1)
 until exit
 connection:Disconnect();
 print("Script ended")
