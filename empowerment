@@ -236,15 +236,6 @@ function fire()
     end
 end
 
---local testsstest = {
---	314159265359,
---	game:GetService("Players"):WaitForChild("MarvelNegaNoobs").Character,
---	vector.create(-65.298095703125, 8.066152572631836, 86.49816131591797),
---	1.321201205253601,
---	game:GetService("Players"):WaitForChild("MarvelNegaNoobs").Character:WaitForChild("Torso")
---}
---game:GetService("ReplicatedStorage"):WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(args))
-
 function main()
     for i,v in pairs(trgtList) do
         v.repeats = v.repeats-1
