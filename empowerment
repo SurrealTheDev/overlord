@@ -185,37 +185,41 @@ function fire()
             end
         end
         add.args = {
-            [1] = nil,
-            [2] = vZero,
-            [3] = 0,
-            [4] = nil
+            [1] = 1,
+            [2] = nil,
+            [3] = vZero,
+            [4] = 0,
+            [5] = nil
         }
         if trgtList[tSetting]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[tSetting]=add;
     elseif nSetting == "ability" or nSetting == "a" then
         add.args =  {
-            [1] =  nil,
-            [2] =  vZero,
-            [3] = 0,
-            [4] =  nil
+            [1] = 1,
+            [2] = nil,
+            [3] = vZero,
+            [4] = 0,
+            [5] = nil
         }
         if trgtList[(tSetting.." - ability")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - ability")]=add;
     elseif nSetting == "engi" or nSetting == "e" then
         add.args =  {
-            [1] =  nil,
-            [2] =  vZero,
-            [3] = 0,
-            [4] =  nil
+            [1] = 1,
+            [2] = nil,
+            [3] = vZero,
+            [4] = 0,
+            [5] = nil
         }
         if trgtList[(tSetting.." - engi")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - engi")]=add;
     elseif nSetting == "npc" or nSetting == "n" then
         add.args =  {
-            [1] = nil,
-            [2] =  vZero,
-            [3] = 0,
-            [4] =  nil
+            [1] = 1,
+            [2] = nil,
+            [3] = vZero,
+            [4] = 0,
+            [5] = nil
         }
         if trgtList[(tSetting.." - npc")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - npc")]=add;
