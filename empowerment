@@ -245,7 +245,7 @@ function main()
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
                     
-                    Arg[2]=Players:WaitForChild(v0.Name)
+                    Arg[2]=Players:WaitForChild(v0.Name).Character
                     Arg[5] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                     
@@ -253,7 +253,7 @@ function main()
             else
                 if v.valid then
                     local Arg = v.args
-                    Arg[2]=Players:WaitForChild(v.target)
+                    Arg[2]=Players:WaitForChild(v.target).Character
                     Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
@@ -263,14 +263,14 @@ function main()
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
                     
-                    Arg[2]=Players:WaitForChild(v0.Name)
+                    Arg[2]=Players:WaitForChild(v0.Name).Character
                     Arg[5] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
             else
                 if (Players:FindFirstChild(v.target) and workspace:FindFirstChild(v.target))~=nil then
                     local Arg = v.args
-                    Arg[2]=Players:WaitForChild(v.target)
+                    Arg[2]=Players:WaitForChild(v.target).Character
                     Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
@@ -360,7 +360,7 @@ function sqMag(V1,V2)
 end
 
 function pPlayer(arg)
-    if (arg[2]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
+    if (not (arg[2] ==nil) and arg[2]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
         print("Player has been punched!")
     else
