@@ -185,56 +185,65 @@ function fire()
             end
         end
         add.args = {
-            [1] = 1,
-            [2] = nil,
-            [3] = vZero,
-            [4] = 0,
-            [5] = nil
+            314159265359,
+            nil,
+            vZero,
+            0,
+            nil
         }
         if trgtList[tSetting]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[tSetting]=add;
     elseif nSetting == "ability" or nSetting == "a" then
         add.args =  {
-            [1] = 1,
-            [2] = nil,
-            [3] = vZero,
-            [4] = 0,
-            [5] = nil
+            314159265359,
+            nil,
+            vZero,
+            0,
+            nil
         }
         if trgtList[(tSetting.." - ability")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - ability")]=add;
     elseif nSetting == "engi" or nSetting == "e" then
         add.args =  {
-            [1] = 1,
-            [2] = nil,
-            [3] = vZero,
-            [4] = 0,
-            [5] = nil
+            314159265359,
+            nil,
+            vZero,
+            0,
+            nil
         }
         if trgtList[(tSetting.." - engi")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - engi")]=add;
     elseif nSetting == "npc" or nSetting == "n" then
         add.args =  {
-            [1] = 1,
-            [2] = nil,
-            [3] = vZero,
-            [4] = 0,
-            [5] = nil
+            314159265359,
+            nil,
+            vZero,
+            0,
+            nil
         }
         if trgtList[(tSetting.." - npc")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." - npc")]=add;
     elseif nSetting == "pka" then
         add.args =  {
-            [1] = 1,
-            [2] = nil,
-            [3] =  vZero,
-            [4] = 0,
-            [5] =  nil
+            314159265359,
+            nil,
+            vZero,
+            0,
+            nil
         }
         if trgtList[(tSetting.." w ka")]==nil then activeCount = activeCount+1;updateActiveCount() end
         trgtList[(tSetting.." w ka")]=add;
     end
 end
+
+--local testsstest = {
+--	314159265359,
+--	game:GetService("Players"):WaitForChild("MarvelNegaNoobs").Character,
+--	vector.create(-65.298095703125, 8.066152572631836, 86.49816131591797),
+--	1.321201205253601,
+--	game:GetService("Players"):WaitForChild("MarvelNegaNoobs").Character:WaitForChild("Torso")
+--}
+game:GetService("ReplicatedStorage"):WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(args))
 
 function main()
     for i,v in pairs(trgtList) do
@@ -245,7 +254,7 @@ function main()
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
                     
-                    Arg[2]=workspace:WaitForChild(v0.Name)
+                    Arg[2]=Players:WaitForChild(v0.Name)
                     Arg[5] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                     
@@ -253,7 +262,7 @@ function main()
             else
                 if v.valid then
                     local Arg = v.args
-                    Arg[2]=workspace:WaitForChild(v.target)
+                    Arg[2]=Players:WaitForChild(v.target)
                     Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
@@ -263,14 +272,14 @@ function main()
                 for i,v0 in Players:GetPlayers() do
                     local Arg = v.args
                     
-                    Arg[2]=workspace:WaitForChild(v0.Name)
+                    Arg[2]=Players:WaitForChild(v0.Name)
                     Arg[5] = Players:WaitForChild(v0.Name).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
             else
                 if (Players:FindFirstChild(v.target) and workspace:FindFirstChild(v.target))~=nil then
                     local Arg = v.args
-                    Arg[2]=workspace:WaitForChild(v.target)
+                    Arg[2]=Players:WaitForChild(v.target)
                     Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
                     pPlayer(Arg)
                 end
