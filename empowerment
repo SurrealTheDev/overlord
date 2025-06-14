@@ -253,9 +253,13 @@ function main()
             else
                 if v.valid then
                     local Arg = v.args
-                    Arg[2]=Players:WaitForChild(v.target).Character
-                    Arg[5] = Players:WaitForChild(v.target).Character:FindFirstChild("Right Arm")
-                    pPlayer(Arg)
+                    if Players:FindFirstChild(v.target)~=nil then
+                        local trgtP = Players:WaitForChild(v.target).Character
+                        Arg[2]= trgtP
+                        Arg[5] = trgtP:FindFirstChild("Right Arm")
+                        workspace:WaitForChild(me.Name).Character:PivotTo(trgtP:GetPivot())
+                        pPlayer(Arg)
+                    end
                 end
             end
         elseif etype=="ability" or etype == "a" then
@@ -375,7 +379,7 @@ repeat
     if TEnabled then
         main()
     end
-    wait(0.1)
+    wait(0.05)
 until exit
 connection:Disconnect();
 print("Script ended")
