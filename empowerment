@@ -257,7 +257,7 @@ function main()
                         local trgtP = Players:WaitForChild(v.target).Character
                         Arg[2]= trgtP
                         Arg[5] = trgtP:FindFirstChild("Right Arm")
-                        workspace:WaitForChild(me.Name).Character:PivotTo(trgtP:GetPivot())
+                        Players:WaitForChild(me.Name).Character:PivotTo(trgtP:GetPivot())
                         pPlayer(Arg)
                     end
                 end
