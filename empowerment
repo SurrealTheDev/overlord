@@ -1,6 +1,7 @@
 Players = game:GetService("Players")
 RStorage = game:GetService("ReplicatedStorage")
 Builds = workspace:FindFirstChild("Engineer Builds")
+RunService = game:GetService("RunService")
 
 local Main = Instance.new("ScreenGui")
 Main.Name = "zXM10284"
@@ -236,8 +237,16 @@ function fire()
     end
 end
 
+local iter = 1;
 function main()
     for i,v in pairs(trgtList) do
+        if i ~= iter then
+            continue;
+        end
+        iter = iter + 1;
+        if iter > #trgtList then
+            iter = 1
+        end
         v.repeats = v.repeats-1
         local etype = v.etype
         if etype=="player" or etype == "p" then
@@ -351,6 +360,7 @@ function main()
             updateActiveCount()
             trgtList[i]=nil
         end
+        break;
     end
 end
 function sqMag(V1,V2)
@@ -364,7 +374,7 @@ function sqMag(V1,V2)
 end
 
 function pPlayer(arg)
-    if (not (arg[2] ==nil) and arg[2]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
+    if (arg~=nil and (arg[2] ~=nil) and arg[2]:FindFirstChild("Right Arm"):FindFirstChild("SelectionBox")==nil) then
         RStorage:WaitForChild("Remote Events"):WaitForChild("Punch"):FireServer(unpack(arg))
         print("Player has been punched!")
     else
@@ -372,14 +382,53 @@ function pPlayer(arg)
     end
 end
 
+function getRoot(char)
+	local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('Torso') or char:FindFirstChild('UpperTorso')
+	return rootPart
+end
+
 local connection = mouse.Button2Down:Connect(fire)
+
+local T = getRoot(Players.LocalPlayer)
+local BG = Instance.new('BodyGyro')
+local BV = Instance.new('BodyVelocity')
+BG.P = 9e4
+BG.Parent = T
+BV.Parent = T
+BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+BG.CFrame = T
+BV.Velocity = Vector3.new(0, 0, 0)
+BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
 
 repeat
     local exit = me:GetAttribute("CANCEL")
     if TEnabled then
         main()
+        if false then
+            local character = Players.LocalPlayer.Character
+            local root = getRoot(character)
+            local vel, movel = nil, 0.1
+
+            if (character and character.Parent and root and root.Parent) then
+
+                vel = root.Velocity
+                root.Velocity = vel * 100000 + Vector3.new(0, 100000, 0)
+
+                RunService.RenderStepped:Wait()
+                if character and character.Parent and root and root.Parent then
+                    root.Velocity = vel
+                end
+
+                RunService.Stepped:Wait()
+                if character and character.Parent and root and root.Parent then
+                    root.Velocity = vel + Vector3.new(0, movel, 0)
+                    movel = movel * -1
+                end
+            end
+        else
+            RunService.Stepped:Wait()
+        end
     end
-    wait(0.05)
 until exit
 connection:Disconnect();
 print("Script ended")
