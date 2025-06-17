@@ -260,7 +260,7 @@ function main()
                         Arg[5] = trgtP:FindFirstChild("Right Arm")
                         Players.LocalPlayer.Character:PivotTo(trgtP:GetPivot())
                         pPlayer(Arg)
-                        RunService.Stepped:Wait()
+                        Wait(0.1);
                     end
                 end
             end
