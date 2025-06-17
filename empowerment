@@ -237,16 +237,8 @@ function fire()
     end
 end
 
-local iter = 1;
 function main()
     for i,v in pairs(trgtList) do
-        if i ~= iter then
-            continue;
-        end
-        iter = iter + 1;
-        if iter > #trgtList then
-            iter = 1
-        end
         v.repeats = v.repeats-1
         local etype = v.etype
         if etype=="player" or etype == "p" then
@@ -268,6 +260,7 @@ function main()
                         Arg[5] = trgtP:FindFirstChild("Right Arm")
                         Players.LocalPlayer.Character:PivotTo(trgtP:GetPivot())
                         pPlayer(Arg)
+                        RunService.Stepped:Wait()
                     end
                 end
             end
