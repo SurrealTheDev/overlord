@@ -389,6 +389,8 @@ end
 
 local connection = mouse.Button2Down:Connect(fire)
 
+
+if false then
 local T = getRoot(Players.LocalPlayer)
 local BG = Instance.new('BodyGyro')
 local BV = Instance.new('BodyVelocity')
@@ -399,7 +401,7 @@ BG.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
 BG.CFrame = T
 BV.Velocity = Vector3.new(0, 0, 0)
 BV.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-
+end 
 repeat
     local exit = me:GetAttribute("CANCEL")
     if TEnabled then
