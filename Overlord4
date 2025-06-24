@@ -1,0 +1,4050 @@
+using AutoclickMain;
+using Microsoft.VisualBasic.ApplicationServices; 
+using OverLord4;
+using PacketDotNet;
+using SharpPcap;
+using SharpPcap.LibPcap;
+using SharpPcap.WinDivert;
+using System;
+using System.ComponentModel;
+using System.Data.Common;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO.Compression;
+using System.IO.Pipes;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Cryptography.Xml;
+using System.Security.Policy;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
+
+namespace Overlord4
+{
+    internal class BasicInject{
+        // Token: 0x06000039 RID: 57
+        [DllImport("kernel32", CharSet = CharSet.Ansi, SetLastError = true)]
+        internal static extern IntPtr LoadLibraryA(string lpFileName);
+
+        // Token: 0x0600003A RID: 58
+        [DllImport("kernel32", CharSet = CharSet.Ansi, ExactSpelling = true, SetLastError = true)]
+        internal static extern UIntPtr GetProcAddress(IntPtr hModule, string procName);
+
+        // Token: 0x0600003B RID: 59
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool FreeLibrary(IntPtr hModule);
+
+        // Token: 0x0600003C RID: 60
+        [DllImport("kernel32.dll")]
+        internal static extern IntPtr OpenProcess(ProcessAccess dwDesiredAccess, [MarshalAs(UnmanagedType.Bool)] bool bInheritHandle, int dwProcessId);
+
+        // Token: 0x0600003D RID: 61
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        internal static extern IntPtr VirtualAllocEx(IntPtr hProcess, IntPtr lpAddress, uint dwSize, uint flAllocationType, uint flProtect);
+
+        // Token: 0x0600003E RID: 62
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool WriteProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, byte[] lpBuffer, uint nSize, out UIntPtr lpNumberOfBytesWritten);
+
+        // Token: 0x0600003F RID: 63
+        [DllImport("kernel32.dll")]
+        internal static extern IntPtr CreateRemoteThread(IntPtr hProcess, IntPtr lpThreadAttributes, uint dwStackSize, UIntPtr lpStartAddress, IntPtr lpParameter, uint dwCreationFlags, out IntPtr lpThreadId);
+
+        // Token: 0x06000040 RID: 64
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern bool ReadProcessMemory(IntPtr hProcess, IntPtr lpBaseAddress, [Out] byte[] lpBuffer, int dwSize, out int lpNumberOfBytesRead);
+
+        // Token: 0x06000041 RID: 65 RVA: 0x00002AB4 File Offset: 0x00000CB4
+        public bool InjectDLL()
+        {
+            if (Process.GetProcessesByName("RobloxPlayerBeta").Length == 0)
+            {
+                return false;
+            }
+            Process process = Process.GetProcessesByName("RobloxPlayerBeta")[0];
+            byte[] bytes = new ASCIIEncoding().GetBytes(AppDomain.CurrentDomain.BaseDirectory + "exploit-main.dll");
+            IntPtr hModule = LoadLibraryA("kernel32.dll");
+            UIntPtr procAddress = GetProcAddress(hModule, "LoadLibraryA");
+            FreeLibrary(hModule);
+            if (procAddress == UIntPtr.Zero)
+            {
+                return false;
+            }
+            IntPtr intPtr = OpenProcess(ProcessAccess.AllAccess, false, process.Id);
+            if (intPtr == IntPtr.Zero)
+            {
+                return false;
+            }
+            IntPtr intPtr2 = VirtualAllocEx(intPtr, (IntPtr)0, (uint)bytes.Length, 12288U, 4U);
+            UIntPtr uintPtr;
+            IntPtr intPtr3;
+            return !(intPtr2 == IntPtr.Zero) && WriteProcessMemory(intPtr, intPtr2, bytes, (uint)bytes.Length, out uintPtr) && !(CreateRemoteThread(intPtr, (IntPtr)0, 0U, procAddress, intPtr2, 0U, out intPtr3) == IntPtr.Zero);
+        }
+        public byte[] ReadStuff()
+        {
+            if (Process.GetProcessesByName("RobloxPlayerBeta").Length == 0)
+            {
+                return null;
+            }
+            Process process = Process.GetProcessesByName("RobloxPlayerBeta")[0];
+            byte[] bytes = new byte[128];
+            IntPtr hModule = LoadLibraryA("kernel32.dll");
+            UIntPtr procAddress = GetProcAddress(hModule, "LoadLibraryA");
+            FreeLibrary(hModule);
+            if (procAddress == UIntPtr.Zero)
+            {
+                return null;
+            }
+            IntPtr intPtr = OpenProcess(ProcessAccess.AllAccess, false, process.Id);
+            if (intPtr == IntPtr.Zero)
+            {
+                return null;
+            }
+            IntPtr intPtr2 = VirtualAllocEx(intPtr, (IntPtr)0, (uint)bytes.Length, 12288U, 4U);
+            UIntPtr uintPtr;
+            int intPtr3;
+            if(!ReadProcessMemory(intPtr,intPtr2,bytes,bytes.Length,out intPtr3))
+            {
+                return null;
+            }
+            Debug.WriteLine(intPtr3);
+            return bytes;
+        }
+
+        // Token: 0x02000004 RID: 4
+        [Flags]
+        public enum ProcessAccess
+        {
+            // Token: 0x0400000A RID: 10
+            AllAccess = 1050235,
+            // Token: 0x0400000B RID: 11
+            CreateThread = 2,
+            // Token: 0x0400000C RID: 12
+            DuplicateHandle = 64,
+            // Token: 0x0400000D RID: 13
+            QueryInformation = 1024,
+            // Token: 0x0400000E RID: 14
+            SetInformation = 512,
+            // Token: 0x0400000F RID: 15
+            Terminate = 1,
+            // Token: 0x04000010 RID: 16
+            VMOperation = 8,
+            // Token: 0x04000011 RID: 17
+            VMRead = 16,
+            // Token: 0x04000012 RID: 18
+            VMWrite = 32,
+            // Token: 0x04000013 RID: 19
+            Synchronize = 1048576
+        }
+    }
+
+    internal static class Program
+    {
+        private static Controller controller;
+        //private static BasicInject inject;
+        /// <summary>
+        ///  The main entry point for the application.
+        /// </summary>
+        private static List<String> TargetAddress = new();
+
+
+        public static void InstallWinDivert()
+        {
+            var version = "2.2.0";
+            var arch = IntPtr.Size == 8 ? "x64" : "x86";
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var driverPath = Path.Combine(baseDir, $"WinDivert-{version}-A\\" + arch);
+            // Download driver if not already there
+            if (!File.Exists(driverPath + "/WinDivert.dll"))
+            {
+                var zipFile = Path.Combine(baseDir, "windivert.zip");
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile(
+                        $"https://github.com/basil00/Divert/releases/download/v{version}/WinDivert-{version}-A.zip",
+                        zipFile
+                    );
+                }
+                ZipFile.ExtractToDirectory(zipFile, baseDir);
+            }
+            // Patch PATH env
+            var oldPath = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+            string newPath = oldPath + Path.PathSeparator + driverPath;
+            Environment.SetEnvironmentVariable("PATH", newPath);
+        }
+        [MTAThread]
+        static void Main()
+        {
+            controller = new();
+            //InstallWinDivert();
+
+            string localPath = "C:\\Users\\Administrator\\AppData\\Local\\";
+            string directory = "Overlord4\\";
+
+            /*if (!Directory.Exists(localPath + directory)) ;
+            {
+            //    Directory.CreateDirectory(localPath + directory);
+            }*/
+
+
+
+            LookForTargets();
+            controller.SetupHooks();
+            //SECTION--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            RobloxAutos(-1);
+            //MinecraftAutos();
+            //AutoUp(new AutoRight(controller));
+            //AutoUp(new BasicTracker(controller));
+            //AutoUp(new AutoType(controller, Autoclicker.SpecialKeys["F2"], ":wilted_rose:"));
+            //AutoUp(new AutoType(controller, Autoclicker.SpecialKeys["F1"], "Nice try!"));
+            //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+            if (true)
+            {
+                int SET = 31;
+                Debug.WriteLine("--------------------------------------------------------------------------------------");
+                Debug.WriteLine("User - " + nameGen(SET));
+                Debug.WriteLine("Password - " + nameFlip(nameGen((SET + (int.MaxValue / 2)))));
+                Debug.WriteLine("--------------------------------------------------------------------------------------");
+                for (int st = 25; st < 30; st++)
+                {
+                    Debug.WriteLine("Type - " + nameGen(st));
+                }
+                Debug.WriteLine("--------------------------------------------------------------------------------------");
+            }
+
+            if (TargetAddress.Count > 0)
+            {
+                AutoUp(new PhaseOutNew(controller, TargetAddress));
+                AutoUp(new Foreshadow(controller,TargetAddress));
+            }
+            
+
+
+            //AutoUp(new ClearCookies());
+            ApplicationConfiguration.Initialize();
+            Application.ApplicationExit += (a, b) =>
+            {
+                controller.Dispose();
+            };
+            Application.Run(new Form1());
+        }
+
+        private static void LookForTargets()
+        {
+            TargetAddress.Clear();
+            Process[] tProcess = Process.GetProcesses();
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "netstat",
+                    Arguments = "-on",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                }
+            };
+
+            proc.Start();
+            Regex r = new Regex(@"\S+\s+(?<address>\S+)\s+\S+\s+\S+\s+(?<pid>\d+)");
+            while (!proc.StandardOutput.EndOfStream)
+            {
+                var res = r.Match(proc.StandardOutput.ReadLine());
+                if (res.Success)
+                {
+                    var pid = int.Parse(res.Groups["pid"].Value);
+                    var address = res.Groups["address"].Value;
+                    if (Process.GetProcessById(pid).ProcessName.Contains("Roblox"))
+                    {
+                        Debug.WriteLine("{0} - {1}", address, Process.GetProcessById(pid).ProcessName);
+                        int index = address.IndexOf(':');
+                        if (index >= 0)
+                            address = address.Substring(0, index);
+                        TargetAddress.Add(address);
+                    }
+                }
+            }
+        }
+        static String nameGen(int seed)
+        {
+            var random = new Random(seed);
+            String charSet = "abcdefghijklmnopqrstuvwxyz" + "abcdefghijklmnopqrstuvwxyz".ToUpper() +"0123456789";
+            String ret = "";
+            int iter = 12 + random.Next(10);
+            for (int i=0;i<iter;i++)
+            {
+                ret += charSet[random.Next(charSet.Length)];
+            }
+            return ret;
+        }
+
+        static String nameFlip(String str)
+        {
+            String ret = "";
+            for (int i = (str.Length-1); i >= 0; i--)
+            {
+                ret += str[i];
+            }
+            return ret;
+        }
+
+
+        static void AutoUp(Autoclicker auto)
+        {
+            auto.Start();
+            Application.ApplicationExit += (a, b) =>
+            {
+                auto.Disable();
+            };
+        }
+        static void MinecraftAutos()
+        {
+            //AutoUp(new AutoRight(controller));
+            //AutoUp(new AutoLeft(controller));
+            //AutoUp(new FarmMacro(controller));
+            AutoUp(new FarmMacro(controller));
+            AutoUp(new AutoTarget(controller));
+        }
+        static void RobloxAutos(int type)
+        {
+            //AutoUp(new PhazeIn(controller));
+            //AutoUp(new PhazeOut(controller));
+            if (type < 0 || type>2)AutoUp(new KeyAuto(controller, 0x0, 12));
+            if (true) {
+                //AutoUp(new LaughTrack(controller, 0x47, 1));
+            }
+            else
+            {
+                AutoUp(new SuperJump(controller, 0x47));
+            }
+            //AutoUp(new HateGrab(controller));
+            //AutoUp(new NumIterAuto(controller,0x32,0x35,0x36));
+            AutoUp(new Translate(controller, 0x08));
+        } 
+    }
+
+    public class ClearCookies : Autoclicker
+    {
+        public ClearCookies()
+        {
+
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            Updating = true;
+            update.Start();
+        }
+        string trgt = "C:\\Users\\Administrator\\AppData\\Local\\Roblox\\LocalStorage\\RobloxCookies.DAT";
+        public override void Update()
+        {
+            while (Updating)
+            {
+                if (File.Exists(trgt)) {
+                    File.Delete(trgt);
+                    Thread.Sleep(10000);
+                }
+                Thread.Sleep(1000);
+            }
+        }
+    }
+
+    public class Foreshadow : Autoclicker
+    {
+        KeyboardConnect toggle;
+        KeyboardConnect sDown;
+
+        MouseConnect slowDown;
+        MouseConnect M1Down;
+
+        bool SlowDown = false;
+        bool Active = false;
+        bool SKey = false;
+        bool m1Down = false;
+        List<String> TargetAddress;
+        void ToggleAbility()
+        {
+            Active = !Active;
+            Debug.WriteLine("Active - " + Active.ToString());
+        }
+        void ToggleSlow()
+        {
+            SlowDown = !SlowDown;
+            Debug.WriteLine("Active - " + Active.ToString());
+        }
+        public Foreshadow(Controller cont,List<String> targetAddress)
+        {
+            toggle = new(cont, SpecialKeys["F12"]);
+            toggle.SetCancel(true);
+            toggle.SetOnKeyDown((e) =>
+            {
+                ToggleAbility();
+            });
+
+
+            M1Down = new(cont, new LeftM());
+            M1Down.SetOnDown((e) =>
+            {
+                m1Down = true;
+                Debug.WriteLine("M1 Down - " + m1Down.ToString());
+            });
+            M1Down.SetOnUp((e) =>
+            {
+                m1Down = false;
+                Debug.WriteLine("M1 Down - " + m1Down.ToString());
+            });
+
+            slowDown = new(cont, new SpecialM(MouseConnect.X1));
+            slowDown.SetCancel(true);
+            slowDown.SetOnDblc((e) =>
+            {
+                ToggleAbility();
+            });
+
+
+            sDown = new(cont, 's');
+            sDown.SetOnKeyDown((e) =>
+            {
+                SKey = true;
+                Debug.WriteLine("S Key Down - " + SKey.ToString());
+            });
+            sDown.SetOnKeyUp((e) =>
+            {
+                SKey = false;
+                Debug.WriteLine("S Key Down - " + SKey.ToString());
+            });
+
+            TargetAddress = targetAddress;
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            Updating = false;
+            //toggle.Disable();
+            //sDown.Disable();
+            slowDown.Disable();
+            //M1Down.Disable();
+        }
+
+        public override void Enable()
+        {
+            Updating = true;
+            update.Start();
+            //toggle.Enable();
+            //sDown.Enable();
+            slowDown.Enable();
+            //M1Down.Enable();
+        }
+
+        uint OutRecvMin = 0;
+        uint OutRecvMax = 5000;
+        uint InRecvMin = 1000;
+        uint InRecvMax = 2000;
+        int dPacketMax = 10;
+
+
+
+
+
+        double slowDownRate = 1;
+        double speedUpRate = 200;
+        double maxLagTime = (0.5);
+        double currentDelay = 0;
+        public List<DPacket> dPackets = new();
+        bool WOutRecvOpen = false;
+        bool WTransmitterOpen= false;
+        bool sReq => Active;
+        int[] IgnoreList = {64, 87, 107, 112 ,170};
+        int maxChecks = 300;
+        int checks = 0;
+        Dictionary<int, int> SizeCounts = new();
+        public override void Update()
+        {
+            using WinDivertDevice WOutRecv = new WinDivertDevice
+            {
+
+                Filter = "outbound and udp and udp.PayloadLength<" +OutRecvMax+" and udp.PayloadLength>" + OutRecvMin+" and ip.SrcAddr == " + TargetAddress[0],
+                Flags = 0
+            };
+            WOutRecv.OnPacketArrival += (s, e) =>
+            {
+                dPackets.Add(new() { Packet = e.GetPacket(), Time = DTime() });
+            };
+            double estimatedCurrentTime = 0;
+            double delayStart = 0;
+            double mTime = 0;
+            bool slowDown = false;
+            RawCapture LastSend = null;
+            WOutRecv.Open(DeviceModes.MaxResponsiveness);
+            while (Updating)
+            {
+                if (sReq)
+                {
+                    WOutRecv.StartCapture();
+                    Thread.Sleep(50);
+                    WOutRecv.StopCapture();
+                    estimatedCurrentTime = DTime();
+                    if (sReq)
+                    {
+                        if (!slowDown)
+                        {
+                            slowDown = true;
+                            delayStart = estimatedCurrentTime;
+                            //Debug.WriteLine("Slowing Down");
+                        }
+                        currentDelay = Math.Clamp(slowDownRate * (estimatedCurrentTime - delayStart), 0, maxLagTime);
+                    }
+                    else
+                    {
+                        if (slowDown)
+                        {
+                            slowDown = false;
+                            LeftClick();
+                            delayStart = estimatedCurrentTime;
+                            mTime = currentDelay;
+                        }
+                        currentDelay = Math.Clamp(mTime - speedUpRate * (estimatedCurrentTime - delayStart), 0, maxLagTime);
+                    }
+                    //Debug.WriteLine(currentDelay);
+                    double dTime = 0;
+                    bool hasSent = false;
+                    while (dPackets.Count > 0 && ((dPackets[0].Time- estimatedCurrentTime)<=-currentDelay))
+                    {
+                        var dCap = dPackets[0];
+                        WOutRecv.SendPacket(dCap.Packet);
+                        LastSend = dCap.Packet;
+                        hasSent = true;
+                        dTime = dCap.Time;
+                        //Debug.WriteLine(dCap);
+                        dPackets.RemoveAt(0);
+                    }
+                    if (!hasSent&& LastSend!=null) WOutRecv.SendPacket(LastSend);
+                    //if(dTime!=0) Debug.WriteLine("Delay - "+(dTime-pCapture.GetPacket().Timeval.Value));
+                }
+                else
+                {
+                    bool drop = false;
+                    WOutRecv.GetNextPacket(out PacketCapture pCapture);
+                    int dSize = GetCapturedPayloadSize(pCapture.GetPacket());
+                    if (dSize!= 129 && !IgnoreList.Contains(dSize) && dSize<=(byte.MaxValue-20))
+                    {
+                        Debug.Write("Data -");
+                        foreach (byte B in GetCapturedPayload(pCapture.GetPacket()))
+                        {
+                            Debug.Write(" "+B);
+                        }
+                        Debug.Write(" , Size - "+GetCapturedPayloadSize(pCapture.GetPacket())); 
+                        Debug.Write("\n");
+                        drop = true;
+                        if (!SizeCounts.ContainsKey(dSize))
+                        {
+                            SizeCounts[dSize] = 1;
+                        }
+                        else
+                        {
+                            SizeCounts[dSize]++;
+                        }
+                            checks++;
+                    }
+                    if (checks>=maxChecks)
+                    {
+                        foreach (int kv in SizeCounts.Keys)
+                        {
+                            Debug.WriteLine("Size - " + kv + " , Frequency - " + SizeCounts[kv]);
+                        }
+                        return;
+                    }
+                    
+                    estimatedCurrentTime = DTime();
+                    while (dPackets.Count > 0)
+                    {
+                        WOutRecv.SendPacket(dPackets[0].Packet);
+                        dPackets.RemoveAt(0);
+                    }
+                    LastSend = pCapture.GetPacket();
+                    if(!drop)WOutRecv.SendPacket(pCapture.GetPacket());
+                }
+            }
+        }
+        public struct DPacket
+        {
+            public RawCapture Packet;
+            public double Time;
+        }
+        public void ObtainPacket()
+        {
+            /*
+            WOutRecv.GetNextPacket(out PacketCapture rawPacket);
+            var packet = rawPacket.GetPacket();
+            var pPacket = Packet.ParsePacket(packet.LinkLayerType, packet.Data);
+            DPacket dp = new()
+            {
+                Packet = pPacket,
+                Time = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+            };
+            dPackets.Add(dp);
+            */
+        }
+        double DTime()
+        {
+            return (DateTimeOffset.Now.ToUnixTimeMilliseconds() / 1000);
+        }
+        int GetCapturedPayloadSize(RawCapture capture)
+        {
+            return Packet.ParsePacket(capture.LinkLayerType,capture.Data).Extract<IPPacket>().PayloadLength;
+        }
+        byte[] GetCapturedPayload(RawCapture capture)
+        {
+            return Packet.ParsePacket(capture.LinkLayerType, capture.Data).Extract<IPPacket>().HeaderData;
+        }
+        bool GetCapturedHasPayload(RawCapture capture)
+        {
+            return Packet.ParsePacket(capture.LinkLayerType, capture.Data).Extract<IPPacket>().HasPayloadData;
+        }
+    }
+    public class PhaseOutNew : Autoclicker
+    {
+        KeyboardConnect kA;
+        MouseConnect mA;
+        bool phased = false;
+        List<String> TargetAddress;
+        public PhaseOutNew(Controller cont, List<String> targetAddress)
+        {      
+            mA = new(cont, new SpecialM(MouseConnect.X2));
+            /*kA = new(cont, SpecialKeys["Tab"]);
+
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                SlowDown = !SlowDown;
+                Debug.WriteLine("SlowDown = " + SlowDown.ToString());
+            });*/
+            mA.SetCancel(true);
+            mA.SetOnDblc((e) =>
+            {
+                phased = !phased;
+                Debug.WriteLine("Phase Out Active - "+phased.ToString());
+            });
+            TargetAddress = targetAddress;
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            Updating = false;
+            //kA.Disable();
+            mA.Disable();
+        }
+
+        public override void Enable()
+        {
+            Updating = true;
+            update.Start();
+            //kA.Enable();
+            mA.Enable();
+        }
+
+        uint OutRecvMin = 8;
+        uint OutRecvMax = 5000;
+        uint InRecvMin = 800;
+        uint InRecvMax = 5000;
+        int dPacketMax = 10;
+
+        decimal slowDownRate = (decimal)0.3;
+        decimal speedUpRate = (decimal)200;
+        decimal maxLagTime = (decimal)(0.3);
+        decimal currentDelay = (decimal)0;
+        public List<RawCapture> dPackets = new();
+        bool WOutRecvOpen = false;
+        bool WTransmitterOpen = false;
+        public override void Update()
+        {
+            using WinDivertDevice WInRecv = new WinDivertDevice
+            {
+
+                Filter = "inbound and udp and udp.PayloadLength<" + InRecvMax + " and udp.PayloadLength>" + InRecvMin + " and ip.DstAddr == " + TargetAddress[0],
+                Flags = 0
+            };
+            decimal estimatedCurrentTime = 0;
+            decimal delayStart = 0;
+            decimal mTime = 0;
+            bool phasing = false;
+            RawCapture LastSend = null;
+            //WInRecv.Open(DeviceModes.Promiscuous);
+            while (Updating)
+            {
+                if (false)
+                {
+                    WInRecv.GetNextPacket(out PacketCapture pCapture);
+                    WInRecv.SendPacket(pCapture.GetPacket());
+                }
+                else if (phased)
+                {
+                    if (!phasing)
+                    {
+                        phasing = true;
+                        WInRecv.Open(DeviceModes.Promiscuous);
+                    }
+                    WInRecv.GetNextPacket(out PacketCapture pCapture);
+                    
+                    var pD = pCapture.GetPacket();
+                    //Debug.WriteLine(Packet.ParsePacket(pD.LinkLayerType, pD.Data).Extract<IPPacket>().PayloadLength);
+                    dPackets.Add(pCapture.GetPacket());
+                    WInRecv.SendPacket(pD);
+                }
+                else if (phasing)
+                {
+                    phasing = false;
+                    WInRecv.Close();
+                }
+            }
+        }
+        public struct DPacket
+        {
+            public Packet Packet;
+            public long Time;
+        }
+        public void ObtainPacket()
+        {
+            /*
+            WOutRecv.GetNextPacket(out PacketCapture rawPacket);
+            var packet = rawPacket.GetPacket();
+            var pPacket = Packet.ParsePacket(packet.LinkLayerType, packet.Data);
+            DPacket dp = new()
+            {
+                Packet = pPacket,
+                Time = DateTimeOffset.Now.ToUnixTimeMilliseconds()
+            };
+            dPackets.Add(dp);
+            */
+        }
+    }
+    public class BasicTracker : Autoclicker
+    {
+        public KeyboardConnect kA;
+        public KeyboardConnect kB;
+        public KeyboardConnect kC;
+        bool fire = false;
+
+        int grain = 0;
+        int count = 1;
+        bool fps = false;
+        int maxLocks = 3;
+
+
+        public List<Point> defaultPos = new List<Point>();
+
+        public List<Color> lockedColors = new List<Color>();
+         public BasicTracker(Controller cont)
+        {
+            kA = new(cont, SpecialKeys["F4"]);//F4
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                fire = !fire;
+            });
+            kB = new(cont, SpecialKeys["F5"]);//F5
+            kB.SetCancel(true);
+            kB.SetOnKeyDown((e) =>
+            {
+                Point point = new();
+                GetCursorPos(ref point);
+
+                CreateLock(new Rectangle(point.X,point.Y,1,1));
+            });
+            kC = new(cont, 117);//F6
+            kC.SetCancel(true);
+            kC.SetOnKeyDown((e) =>
+            {
+                Point point = new();
+                GetCursorPos(ref point);
+
+                defaultPos.Add(point);
+            });
+
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            kB.Disable();
+            kC.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            kB.Enable();
+            kC.Enable();
+            Updating = true;
+            update.Start();
+        }
+        public Color lockedColor;
+        public bool CreateLock(Rectangle area)
+        {
+            BitmapData bData = GrabScreenData(area);
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int grainX = grain;
+                int grainY = grain;
+
+                for (int y = 0; y < bData.Height; y++)
+                {
+                    grainY--;
+                    if (grainY > 0)
+                    {
+                        continue;
+                    }
+                    grainY = grain;
+                    byte* row = scan0 + (y * stride);
+
+                    for (int x = 0; x < bData.Width; x++)
+                    {
+                        grainX--;
+                        if (grainX > 0)
+                        {
+                            continue;
+                        }
+                        grainX = grain;
+                        // Watch out for actual order (BGR)!
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        byte pixelR = row[rIndex];
+                        byte pixelG = row[gIndex];
+                        byte pixelB = row[bIndex];
+                        if (true||(x>=(bData.Width/2)&& y >= (bData.Height / 2)))
+                        {
+                            lockedColors.Add(Color.FromArgb(pixelR, pixelG, pixelB));
+                            if (lockedColors.Count>maxLocks)
+                            {
+                                lockedColors.RemoveAt(0);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+        public int SimpleTarget(Rectangle area, int error,out Point pos)
+        {
+            BitmapData bData = GrabScreenData(area);
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int toleranceSquared = error * error;
+                int grainX = grain;
+                int grainY = grain;
+
+                for (int y = 0; y < bData.Height; y++)
+                {
+                    grainY--;
+                    if (grainY > 0)
+                    {
+                        continue;
+                    }
+                    grainY = grain;
+                    byte* row = scan0 + (y * stride);
+
+                    for (int x = 0; x < bData.Width; x++)
+                    {
+                        grainX--;
+                        if (grainX > 0)
+                        {
+                            continue;
+                        }
+                        grainX = grain;
+                        // Watch out for actual order (BGR)!
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        byte pixelR = row[rIndex];
+                        byte pixelG = row[gIndex];
+                        byte pixelB = row[bIndex];
+
+                        for (int lT = 0; lT<lockedColors.Count;lT++)
+                        {
+                            int diffR = pixelR - lockedColors[lT].R;
+                            int diffG = pixelG - lockedColors[lT].G;
+                            int diffB = pixelB - lockedColors[lT].B;
+
+                            int distance = diffR * diffR + diffG * diffG + diffB * diffB;
+                        
+                            if (distance <= toleranceSquared) { pos = new Point(area.X + x, area.Y + y); return 1; }
+                        }
+                    }
+                }
+            }
+            pos = new Point(0, 0);
+            return 0;
+        }
+        public int HomeOnLock(Rectangle area,int tolerance, ref Point point,Point mPos , out bool overlayed)
+        {
+            BitmapData bData = GrabScreenData(area);
+            overlayed = false;
+            int signature = 0;
+
+            long nX = 0;
+            long nY = 0;
+            long nW = 0;
+
+            int tR = lockedColor.R;
+            int tG = lockedColor.G;
+            int tB = lockedColor.B;
+
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int px=0, py = 0;
+                int dx = 1, dy = 0;
+                int l = 0;
+                int i = 1;
+                bool skip = false;
+
+                int offsetX = (area.Width/2)-1, offsetY = (area.Height/2)-1;
+
+                while (true)
+                {
+
+                    int d = (i / 2);
+                    if (d >= area.Width && d >= area.Height)
+                    {
+                        break;
+                    }
+                    bool nSkip = false;
+                    if (dx!=0)
+                    {
+                        if (d >= area.Width)
+                        {
+                            nSkip = true;
+                            d = area.Width-1;
+                        }
+                    }
+                    else
+                    {
+                        if (d >= area.Height)
+                        {
+                            nSkip = true;
+                            d = area.Height-1;
+                        }
+                    }
+                    //do checks
+                    int x = px + offsetX;
+                    int y = py + offsetY;
+                    if (x < 0 || y < 0 || x >= area.Width || y >= area.Height)
+                    {
+                        throw new IndexOutOfRangeException();
+                    }
+                    //Debug.WriteLine("X:" + px + " Y:" + py + " L:"+l);
+                    byte* row = scan0 + (y * stride);
+                    int bIndex = x * bytesPerPixel;
+                    int gIndex = bIndex + 1;
+                    int rIndex = bIndex + 2;
+
+                    byte pixelR = row[rIndex];
+                    byte pixelG = row[gIndex];
+                    byte pixelB = row[bIndex];
+
+                    int diffR = pixelR - tR;
+                    int diffG = pixelG - tG;
+                    int diffB = pixelB - tB;
+
+                    int distance = diffR * diffR + diffG * diffG + diffB * diffB;
+
+                    if (distance <= tolerance * tolerance)
+                    {
+                        int mx = px;
+                        int my = py;
+                        int a = 1000 - (mx * mx + my * my);
+                        if (px == 0 && py == 0)
+                        {
+                            overlayed = true;
+                        }
+                        a = a > 0 ? a : 0;
+                        nW += a;
+                        nX += x * a;
+                        nY += y * a;
+                        signature++;
+
+                        if (true)
+                        {
+                            point = new(px, py);
+                            return signature;
+                        }
+                    }
+                    if (skip)
+                    {
+                        px += dx * d;
+                        py += dy * d;
+                        l = d;
+                    }
+                    else
+                    {
+                        px += dx;
+                        py += dy;
+                        l++;
+                    }
+
+                    if (l>=d)
+                    {
+                        l = 0;
+                        int tx = dx;
+                        dx = -dy;
+                        dy = tx;
+                        skip = nSkip;
+                        i++;
+                    }
+                }
+            }
+            if (nW <= 0) return 0;
+            point = new((int)((nX/nW)-(area.Width/2)),(int)((nY/nW)-(area.Height/2)));
+
+            return signature;
+        }
+        bool targeted = false;
+        BitmapData LastFrame = null;
+        int hP = 0;
+        public override void Update()
+        {
+            while (Updating)
+            {
+                //Thread.Sleep(10);
+                if (fire)
+                {
+                    if (lockedColor !=null)
+                    {
+
+                        Point mP = new(0,0);
+                        GetCursorPos(ref mP);
+                        Point tP = new(0, 0);
+                        if (fps)
+                        {
+
+
+                            int aX = 500;
+                            int aY = 200;
+                            bool overlay;
+                            int signature = HomeOnLock(new Rectangle(aX, aY, Screen.PrimaryScreen.Bounds.Width - 2 * aX, Screen.PrimaryScreen.Bounds.Height - 2 * aY), 4, ref tP, mP, out overlay);
+                            if (signature > 0)
+                            {
+                                double factor = 0.4;
+                                MoveMouseN(new((int)(tP.X * factor), (int)(tP.Y * factor) + 0));
+                                if (overlay) RightClick();
+                                Thread.Sleep(10);
+                                //MoveMouseN(new((int)(tP.X * -factor), (int)(tP.Y * -factor) + 0));
+                            } 
+                        }
+                        else
+                        {
+                            int aX = 500;
+                            int aY = 200;
+
+                            int signature = SimpleTarget(new Rectangle(aX, aY, Screen.PrimaryScreen.Bounds.Width - 2 * aX, Screen.PrimaryScreen.Bounds.Height - 2 * aY),4, out tP);
+                            if (signature > 0)
+                            {
+                                MoveMouse(new((int)(tP.X), (int)(tP.Y)));
+                                LeftClick();
+                            }
+
+                            if(defaultPos.Count>0) MoveMouse(defaultPos[hP%defaultPos.Count]);
+                            hP++;
+                            if (hP > defaultPos.Count)
+                            {
+                                hP = 0;
+                            }
+                            Thread.Sleep(10);
+                        }
+                    }
+                    else
+                    {
+                        fire = false;
+                    }
+                }
+            }
+        }
+        private uint state = 0;
+        private bool triggered = false;
+    }
+
+
+
+
+
+
+
+    public class FarmMacro : Autoclicker
+    {
+        public KeyboardConnect kA;
+        public KeyboardConnect kB;
+        public KeyboardConnect[] kChecks;
+        public String badKeys = "1234567f";
+        bool fire = false;
+        bool switchDir = false;
+        Input[] warpGarden;
+        int count = 1;
+        public  FarmMacro(Controller cont)
+        {
+            warpGarden = TypeGenerateV("warp garden");
+            kA = new(cont, SpecialKeys["F5"]);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                fire = !fire;
+                if (fire) {
+                    PressButtonS('r');
+                    GroupEnable(kChecks);
+                }
+                else
+                {
+                    GroupDisable(kChecks);
+                }
+                if (fire) check = 0;
+                switchDir = false;
+            });
+            kB = new(cont, SpecialKeys["F4"]);
+            kB.SetCancel(true);
+            kB.SetOnKeyDown((e) =>
+            {
+                switchDir = true;
+                /*
+                Point refPoint = new();
+                GetCursorPos(ref refPoint);
+                var point = GetColorAt(refPoint);
+                MessageBox.Show("Color : " + point.ToString() + "\n"+"Posiiton : "+ refPoint.ToString());
+                */
+            });
+            kChecks = new KeyboardConnect[badKeys.Length];
+            for (int i=0; i<badKeys.Length;i++)
+            {
+                KeyboardConnect nKey = new(cont, badKeys[i]);
+                nKey.SetCancel(true);
+                kChecks[i] = nKey;
+            }
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            kB.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            kB.Enable();
+            Updating = true;
+            update.Start();
+        }
+        public bool SearchColor(Point point, Point area, Color color, int error)
+        {
+            BitmapData bData = GrabScreenData(new Rectangle(point.X, point.Y, area.X - point.X, area.Y - point.Y));
+            var searchedR = color.R;
+            var searchedG = color.G;
+            var searchedB = color.B;
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int toleranceSquared = error * error;
+
+                for (int y = 0; y < bData.Height; y++)
+                {
+                    byte* row = scan0 + (y * stride);
+
+                    for (int x = 0; x < bData.Width; x++)
+                    {
+                        // Watch out for actual order (BGR)!
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        byte pixelR = row[rIndex];
+                        byte pixelG = row[gIndex];
+                        byte pixelB = row[bIndex];
+
+                        int diffR = pixelR - searchedR;
+                        int diffG = pixelG - searchedG;
+                        int diffB = pixelB - searchedB;
+
+                        int distance = diffR * diffR + diffG * diffG + diffB * diffB;
+
+                        if (distance <= toleranceSquared) return true;
+                    }
+                }
+            }
+            return false;
+        }
+        Point point = (new Point(78, 97));
+        Point area = new Point(98, 117);
+
+        Point farmCheck = new Point(1641, 16);
+        Point farmCheck2 = new Point(1649, 22);
+        int check = 0;
+        public override void Update()
+        {
+            while (Updating)
+            {
+                //Thread.Sleep(10);
+                if (fire)
+                {
+                    if (!SearchColor(farmCheck, farmCheck2, Color.FromArgb(255, 0, 0, 0), 2))
+                    {
+                        check++;
+                        LeftUp();
+                        UpButtonV('a');
+                        UpButtonV('d');
+                        if (check>=800&&((check-800)%600==0)) {
+                            Thread.Sleep(1);
+                            PressButtonS('/');
+                            Thread.Sleep(60);
+                            SendInputs(warpGarden);
+                            Thread.Sleep(20);
+                            PressButtonS(SpecialKeys["Enter"]);
+                            Thread.Sleep(100);
+                            triggered = false;
+                        }
+                        continue;
+                    }
+                    else
+                    {
+                        if (check > 1)
+                        {
+                            Thread.Sleep(250);
+                        }
+                        check = 0;
+                    }
+                    if (!triggered)
+                    {
+                        triggered = true;
+                        PressButtonS('r');
+                        Thread.Sleep(50);
+                        LeftClick();
+                        Thread.Sleep(10);
+                        LeftDown();
+                        DownButtonS('d');//65 = A, 68 = D, 87 = W
+                        state = true;
+                    }
+                    if (state)
+                    {
+                        if (SearchColor(point, area, Color.FromArgb(255,187,134,35), 32))
+                        {
+                            //Console.WriteLine("Target Spotted");
+                            LeftClick();
+                            UpButtonV('a');
+                            UpButtonV('d');
+                            Thread.Sleep(20);
+                            PressButtonS('/');
+                            Thread.Sleep(60);
+                            SendInputs(warpGarden);
+                            Thread.Sleep(20);
+                            PressButtonS(SpecialKeys["Enter"]);
+                            Thread.Sleep(50);
+                            LeftDown();
+                            DownButtonS('d');
+                            state = true;
+                            PressButtonS('r');
+                            Thread.Sleep(250);
+                        }
+                        else if (switchDir||SearchColor(point, area, Color.FromArgb(255, 135, 107, 98), 32))
+                        {
+                            switchDir = false;
+                            state = !state;
+                            //MelonSwitchLaneR();
+                            PressButtonS('r');
+                            DownButtonS('a');
+                            UpButtonS('d');
+                            Thread.Sleep(500);
+                        }
+                    }
+                    else
+                    {
+                        if (switchDir||SearchColor(point, area, Color.FromArgb(255, 135, 107, 98), 32))
+                        {
+                            switchDir = false;
+                            state = !state;
+                            //MelonSwitchLaneL();
+                            PressButtonS('r');
+                            DownButtonS('d');
+                            UpButtonS('a');
+                            Thread.Sleep(500);
+                        }
+                    }
+                }
+                else
+                {
+                    if (triggered)
+                    {
+                        triggered = false;
+                        PressButtonS('r');
+                        UpButtonS('d');
+                        UpButtonS('a');
+                        LeftUp();
+                    }
+                }
+            }
+        }
+        private bool state = false;
+        private bool triggered = false;
+        void MelonSwitchLaneL()
+        {
+            DownButtonS('d');
+            DownButtonS(87);
+            Thread.Sleep(200);
+            UpButtonS('a');
+            Thread.Sleep(500);
+            UpButtonS(87);
+        }
+        void MelonSwitchLaneR()
+        {
+            DownButtonS('a');
+            DownButtonS(87);
+            Thread.Sleep(200);
+            UpButtonS('d');
+            Thread.Sleep(500);
+            UpButtonS(87);
+        }
+    }
+    public class MelodyFucker : Autoclicker
+    {
+        public KeyboardConnect kA;
+        public KeyboardConnect kB;
+        bool fire = false;
+        Color target = Color.FromArgb(255, 0, 255, 0);
+        Point[] targetArea = { new Point(839, 464), new Point(1083, 528) };
+        int grain = 0;
+        int count = 1;
+        public MelodyFucker(Controller cont)
+        {
+            kA = new(cont, 118);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                fire = !fire;
+            });
+            kB = new(cont, 119);
+            kB.SetCancel(true);
+            kB.SetOnKeyDown((e) =>
+            {
+                Point refPoint = new();
+                GetCursorPos(ref refPoint);
+                var point = GetColorAt(refPoint);
+                MessageBox.Show("Color : " + point.ToString() + "\n" + "Posiiton : " + refPoint.ToString());
+            });
+        }
+        public override void Start()
+        {
+            target = Color.FromArgb(255, 232, 228, 220);
+            targetArea = new Point[] { new Point(793, 349), new Point(1121, 569) };
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            kB.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            kB.Enable();
+            Updating = true;
+            update.Start();
+        }
+        public bool CheckFrameChange(Point point, Point area, ref BitmapData bData2 , int error)
+        {
+            BitmapData bData = GrabScreenData(new Rectangle(point.X, point.Y, area.X - point.X, area.Y - point.Y));
+            if (bData2==null)
+            {
+                bData2 = bData;
+                return false;
+            }
+            if (bData.Width != bData2.Width || bData.Height != bData2.Height) return false;
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                byte* scan0c = (byte*)bData2.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int toleranceSquared = error * error;
+                int grainX = grain;
+                int grainY = grain;
+
+                for (int y = 0; y < bData.Height; y++)
+                {
+                    grainY--;
+                    if (grainY > 0)
+                    {
+                        continue;
+                    }
+                    grainY = grain;
+                    byte* row = scan0 + (y * stride);
+                    byte* row2 = scan0c + (y * stride);
+
+                    for (int x = 0; x < bData.Width; x++)
+                    {
+                        grainX--;
+                        if (grainX > 0)
+                        {
+                            continue;
+                        }
+                        grainX = grain;
+                        // Watch out for actual order (BGR)!
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        byte pixelR = row[rIndex];
+                        byte pixelG = row[gIndex];
+                        byte pixelB = row[bIndex];
+
+                        byte pixelR2 = row2[rIndex];
+                        byte pixelG2 = row2[gIndex];
+                        byte pixelB2 = row2[bIndex];
+
+                        int diffR = pixelR - pixelR2;
+                        int diffG = pixelG - pixelG2;
+                        int diffB = pixelB - pixelB2;
+
+                        int distance = diffR * diffR + diffG * diffG + diffB * diffB;
+
+                        if (distance > toleranceSquared) {bData2 = bData; return true; }
+                    }
+                }
+            }
+            bData2 = bData;
+            return false;
+        }
+        public bool SearchColorArea(Point point, Point area, Color color, int error, ref Point pos)
+        {
+            BitmapData bData = GrabScreenData(new Rectangle(point.X, point.Y, area.X - point.X, area.Y - point.Y));
+            var searchedR = color.R;
+            var searchedG = color.G;
+            var searchedB = color.B;
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int toleranceSquared = error * error;
+                int grainX = grain;
+                int grainY = grain;
+
+                for (int y = 0; y < bData.Height; y++)
+                {
+                    grainY--;
+                    if (grainY > 0)
+                    {
+                        continue;
+                    }
+                    grainY = grain;
+                    byte* row = scan0 + (y * stride);
+
+                    for (int x = 0; x < bData.Width; x++)
+                    {
+                        grainX--;
+                        if (grainX > 0)
+                        {
+                            continue;
+                        }
+                        grainX = grain;
+                        // Watch out for actual order (BGR)!
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        byte pixelR = row[rIndex];
+                        byte pixelG = row[gIndex];
+                        byte pixelB = row[bIndex];
+
+                        int diffR = pixelR - searchedR;
+                        int diffG = pixelG - searchedG;
+                        int diffB = pixelB - searchedB;
+
+                        int distance = diffR * diffR + diffG * diffG + diffB * diffB;
+
+                        if (distance <= toleranceSquared) { pos = new Point(point.X + x, point.Y + y); return true; }
+                    }
+                }
+            }
+            return false;
+        }
+        bool targeted = false;
+        BitmapData LastFrame= null;
+        public override void Update()
+        {
+            while (Updating)
+            {
+                //Thread.Sleep(10);
+                if (fire)
+                {
+                    Point targetPoint = targetArea[0];
+                    if ((!targeted) && SearchColorArea(targetArea[0], targetArea[1], target, 4, ref targetPoint))
+                    {
+                        MoveMouse(targetPoint);
+                        MiddleClick();
+                        MoveMouse(new Point(1000, 100));
+                        targeted = true;
+                        Thread.Sleep(25);
+                    }
+                    else
+                    {
+                        Point _ = new Point();
+                        if (CheckFrameChange(targetArea[0], targetArea[1], ref LastFrame, 1))
+                        {
+                            Thread.Sleep(25);
+                            targeted = false;
+                        }
+                    }
+                }
+            }
+        }
+        private uint state = 0;
+        private bool triggered = false;
+    }
+    public class AutoTarget : Autoclicker
+    {
+        public KeyboardConnect kA;
+        public KeyboardConnect kB;
+        bool fire = false;
+        Color target = Color.FromArgb(255,0,255,0);
+        Point[] targetArea = { new Point(839,464),new Point(1083,528)};
+        int grain = 0;
+        int count = 1;
+        public AutoTarget(Controller cont)
+        {
+            kA = new(cont, 118);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                fire = !fire;
+            });
+            kB = new(cont, 119);
+            kB.SetCancel(true);
+            kB.SetOnKeyDown((e) =>
+            {
+                Point refPoint = new();
+                GetCursorPos(ref refPoint);
+                var point = GetColorAt(refPoint);
+                //target = point;
+                MessageBox.Show("Color : " + point.ToString() + "\n"+"Posiiton : "+ refPoint.ToString());
+            });
+        }
+        int type =2;
+        public override void Start()
+        {
+            if (type==1)//For Sequencer
+            {
+                target = Color.FromArgb(255, 214, 0, 0);
+                targetArea = new Point[] { new Point(793, 349), new Point(1121, 569) };
+            }
+            else if (type == 2)//For Chrono
+            {
+                target = Color.FromArgb(255, 176, 70, 70);
+                targetArea = new Point[] { new Point(793, 349), new Point(1121, 569) };
+            }
+            else if (type == 3)//For Ditto
+            {
+                target = Color.FromArgb(255, 149, 46, 54);
+                targetArea = new Point[] { new Point(793, 349), new Point(1121, 569) };
+            }
+            else
+            {
+                target = Color.FromArgb(255, 0, 255, 0);
+                targetArea = new Point[]{ new Point(839, 464), new Point(1083, 528) };
+            }
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            kB.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            kB.Enable();
+            Updating = true;
+            update.Start();
+        }
+        public bool SearchColorArea(Point point, Point area, Color color, int error,ref Point pos)
+        {
+            BitmapData bData = GrabScreenData(new Rectangle(point.X, point.Y, area.X - point.X, area.Y - point.Y));
+            var searchedR = color.R;
+            var searchedG = color.G;
+            var searchedB = color.B;
+            unsafe
+            {
+                int bytesPerPixel = 3;
+
+                byte* scan0 = (byte*)bData.Scan0.ToPointer();
+                int stride = bData.Stride;
+
+                int toleranceSquared = error * error;
+                int grainX = grain;
+                int grainY = grain;
+
+                for (int y = 0; y < bData.Height; y++)
+                {
+                    grainY--;
+                    if (grainY > 0)
+                    {
+                        continue;
+                    }
+                    grainY = grain;
+                    byte* row = scan0 + (y * stride);
+
+                    for (int x = 0; x < bData.Width; x++)
+                    {
+                        grainX--;
+                        if (grainX > 0)
+                        {
+                            continue;
+                        }
+                        grainX = grain;
+                        // Watch out for actual order (BGR)!
+                        int bIndex = x * bytesPerPixel;
+                        int gIndex = bIndex + 1;
+                        int rIndex = bIndex + 2;
+
+                        byte pixelR = row[rIndex];
+                        byte pixelG = row[gIndex];
+                        byte pixelB = row[bIndex];
+
+                        int diffR = pixelR - searchedR;
+                        int diffG = pixelG - searchedG;
+                        int diffB = pixelB - searchedB;
+
+                        int distance = diffR * diffR + diffG * diffG + diffB * diffB;
+                        
+                        if (distance <= toleranceSquared) { pos = new Point(point.X + x, point.Y + y); return true; }
+                    }
+                }
+            }
+            return false;
+        }
+        public override void Update()
+        {
+            while (Updating)
+            {
+                //Thread.Sleep(10);
+                if (fire)
+                {
+                    Point targetPoint = targetArea[0];
+                    if (SearchColorArea(targetArea[0], targetArea[1], target, 4,ref targetPoint))
+                    {
+                        MoveMouse(targetPoint);
+                        //MoveMouseN(new((targetPoint.X-(Screen.PrimaryScreen.Bounds.Width / 2))/2, (targetPoint.Y - (Screen.PrimaryScreen.Bounds.Height/2))/2));
+                        //Thread.Sleep(10);
+                        MiddleClick();
+                        //Thread.Sleep(10);
+                        MoveMouse(new Point(1000,100));
+                        //fire = false;
+                        Thread.Sleep(150);
+                    }
+                }
+            }
+        }
+        private uint state = 0;
+        private bool triggered = false;
+    }
+    public class AutoRight : Autoclicker
+    {
+        public MouseConnect kA;
+        bool fire = false;
+        int count = 1;
+        public AutoRight(Controller cont)
+        {
+            kA = new(cont, new SpecialM(MouseConnect.X1));
+            kA.SetCancel(true);
+            kA.SetOnDblc((e) =>
+            {
+                fire = !fire;
+            });
+            kA.SetOnUp((e) =>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(50);
+                if (fire)
+                {
+                    LeftClick();
+                    //fire = false;
+                }
+            }
+        }
+    }
+    public class AutoLeftMaster : Autoclicker
+    {
+        public MouseConnect kA;
+        bool fire = false;
+        int count = 1;
+        public AutoLeftMaster(Controller cont)
+        {
+            kA = new(cont, new SpecialM(MouseConnect.X2));
+            kA.SetCancel(true);
+            kA.SetOnDblc((e) =>
+            {
+                fire = !fire;
+            });
+            kA.SetOnUp((e) =>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(1);
+                if (fire)
+                {
+                    LeftDown();
+                    Thread.Sleep(30);
+                    LeftUp();
+                    //fire = false;
+                }
+            }
+        }
+    }
+    public class AutoType : Autoclicker
+    {
+        public KeyboardConnect kA;
+        bool typing = false;
+        Input[] output;
+        int count = 1;
+        public AutoType(Controller cont, ushort key, string output)
+        {
+            kA = new(cont, key);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                typing = true;
+            });
+            this.output = TypeGenerateV(output);
+        }
+        public AutoType(Controller cont, char key, string output)
+        {
+            kA = new(cont, key);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                typing = true;
+            });
+            this.output = TypeGenerateV(output);
+        }
+        private void TypeResponse()
+        {
+            if(output.Length>0) SendInputs(output);
+            typing = false;
+        } 
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                if (typing)
+                {
+                    kA.Disable();
+                    TypeResponse();
+                    while (typing)
+                    {
+                        Thread.Sleep(1);
+                    }
+                    kA.Enable();
+                }
+
+            }
+            
+        }
+    }
+    public class AutoLeft : Autoclicker
+    {
+        public MouseConnect kA;
+        bool fire = false;
+        int count = 1;
+        public AutoLeft(Controller cont)
+        {
+            kA = new(cont, new SpecialM(MouseConnect.X1));
+            kA.SetCancel(true);
+            kA.SetOnDblc((e) =>
+            {
+                fire = !fire;
+            });
+            kA.SetOnUp((e) =>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(10);
+                if (fire)
+                {
+                    RightClick();
+                }
+            }
+        }
+    }
+    public class PhazeIn : Autoclicker
+    {
+        public MouseConnect kA;
+        public KeyboardConnect kB;
+        private bool shiftPressed = false;
+        private bool virt = false;
+        public PhazeIn(Controller cont)
+        {
+            kB = new(cont, 0x10);
+            kB.SetOnKeyDown((e)=>
+            {
+                shiftPressed = true;
+            });
+            kB.SetOnKeyUp((e)=>
+            {
+                shiftPressed = false;
+            });
+            kA = new(cont, new SpecialM(MouseConnect.X2));
+            kA.SetCancel(true);
+            kA.SetOnDblc((e)=>
+            {
+                bool t = shiftPressed;
+                //Application.Exit();
+                DownButtonV(0x11);
+                PressButtonV(0x7B);
+                UpButtonV(0x11);
+            });
+        }
+        public override void Start()
+        {
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+        }
+
+        public override void Update()
+        {
+        }
+    }
+    public class HateGrab : Autoclicker
+    {
+        public KeyboardConnect kA;
+        bool trigger = false;
+        public HateGrab(Controller cont)
+        {
+            kA = new(cont, 0x45);
+            kA.SetCancel(false);
+            kA.SetOnKeyDown((e)=>
+            {
+                trigger = true;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(10);
+                if (trigger)
+                {
+
+                    trigger = false;
+                    Thread.Sleep(50);
+                    DownButtonV(0x11);
+                    PressButtonV(0x7B);
+                    UpButtonV(0x11);
+                }
+            }
+        }
+    }
+    public class PhazeOut : Autoclicker
+    {
+        public KeyboardConnect kA;
+        public PhazeOut(Controller cont)
+        {
+            kA = new(cont, 0x09);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e)=>
+            {
+                //Application.Exit();
+                DownButtonV(0x11);
+                PressButtonV(0x7A);
+                UpButtonV(0x11);
+            });
+        }
+        public override void Start()
+        {
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+        }
+
+        public override void Update()
+        {
+        }
+    }
+    public class KeyAuto : Autoclicker
+    {
+
+        public KeyboardConnect kA;
+        bool fire = false;
+        ushort keyH = 0x51;
+        int count = 1;
+        public KeyAuto(Controller cont, ushort key, int c)
+        {
+            keyH = key;
+            count = c;
+            kA = new(cont, 0x14);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e)=>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(10);
+                if (fire)
+                {
+                    if (keyH>0) {
+                        for (int i = 0; i < count; i++) {
+                            PressButtonS(keyH);
+                        }
+                    }
+                    LeftClick();
+                }
+            }
+        }
+    }
+
+    public class SuperJump : Autoclicker
+    {
+
+        public KeyboardConnect kA;
+        bool fire = false;
+        bool dis = false; 
+        ushort keyH = 0x20;
+        int count = 1;
+        public SuperJump(Controller cont, ushort key)
+        {
+            //keyH = key;
+            kA = new(cont, 0x47);
+            kA.SetCancel(false);
+            kA.SetOnKeyDown((e) =>
+            {
+                if(!dis)fire = true;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                if (fire)
+                {
+                    Thread.Sleep(40);
+                    DownButtonS(keyH);
+                    Thread.Sleep(250);
+                    UpButtonS(keyH);
+                    fire = false;
+                }
+            }
+        }
+    }
+
+
+    public class Translate : Autoclicker
+    {
+
+        public MouseConnect kA;
+        public KeyboardConnect mA;
+        bool fire = false;
+        ushort keyH = 0x08;
+        int count = 1;
+        public Translate(Controller cont, ushort key)
+        {
+            keyH = key;
+            kA = new(cont, new SpecialM(MouseConnect.X1));
+            kA.SetCancel(true);
+            kA.SetOnDblc((e)=>
+            {
+                fire = !fire;
+            });
+            mA = new(cont, SpecialKeys["Tab"]);
+            mA.SetCancel(true);
+            mA.SetOnKeyDown((e) =>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            mA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            mA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(10);
+                if (fire)
+                {
+                    PressButtonS(keyH);
+                    fire = false;
+                }
+            }
+        }
+    }
+    public class ScrollReplace : Autoclicker
+    {
+
+        public KeyboardConnect kA;
+        public KeyboardConnect kB;
+        public ScrollReplace(Controller cont)
+        {
+            //Debug.WriteLine(0x26);
+            kA = new(cont,0x26);
+            kB = new(cont,0x28);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e) =>
+            {
+                //Debug.WriteLine("Up");
+                ScrollUp();
+            });
+            kB.SetCancel(true);
+            kB.SetOnKeyDown((e) =>
+            {
+                //Debug.WriteLine("Down");
+                ScrollDown();
+            });
+        }
+        public override void Start()
+        {
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable(); 
+            kB.Disable();
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            kB.Enable();
+        }
+
+        public override void Update()
+        {
+            
+        }
+    }
+
+
+    public class LaughTrack : Autoclicker
+    {
+
+        public KeyboardConnect kA;
+        bool fire = false;
+        ushort keyH = 0x47;
+        int count = 1;
+        public LaughTrack(Controller cont, ushort key, int c)
+        {
+            keyH = key;
+            count = c;
+            kA = new(cont, 0x70);
+            kA.SetCancel(true);
+            kA.SetOnKeyDown((e)=>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(20);
+                if (fire)
+                {
+                    for (int i = 0; i < count; i++)
+                    {
+                        PressButtonS(keyH);
+                    }
+                }
+            }
+        }
+    }
+    public class NumIterAuto : Autoclicker
+    {
+        public KeyboardConnect kA;
+        bool fire = false;
+        bool Updating = false;
+
+        int set = 0;
+        ushort[] imp = { 0x31, 0x34};
+        public NumIterAuto(Controller cont, params ushort[] nImp)
+        {
+            kA = new(cont, 0x14);
+            kA.SetCancel(true);
+            imp = nImp;
+            kA.SetOnKeyDown((e)=>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(20);
+                if (fire)
+                {
+                    set = (set + 1) % imp.Length;
+                    LeftClick();
+                    PressButtonS(imp[set]);
+                    LeftClick();
+                }
+            }
+        }
+    }
+    public class AdvNumIterAuto : Autoclicker
+    {
+        public KeyboardConnect kA;
+        bool fire = false;
+        bool Updating = false;
+        int set = 0;
+        Instruction[] imp;
+        public class Instruction
+        {
+            public ushort Key;
+            public int Sleep;
+            public Instruction(ushort key, int sleep)
+            {
+                Key = key;
+                Sleep = sleep;
+            }
+        }
+        public AdvNumIterAuto(Controller cont, params Instruction[] nImp)
+        {
+            kA = new(cont, 0x14);
+            kA.SetCancel(true);
+            imp = nImp;
+            kA.SetOnKeyDown((e)=>
+            {
+                fire = !fire;
+            });
+        }
+        public override void Start()
+        {
+            update = new(Update);
+            Enable();
+        }
+        public override void Disable()
+        {
+            kA.Disable();
+            Updating = false;
+        }
+
+        public override void Enable()
+        {
+            kA.Enable();
+            Updating = true;
+            update.Start();
+        }
+
+        public override void Update()
+        {
+            while (Updating)
+            {
+                Thread.Sleep(20);
+                if (fire)
+                {
+                    while (fire)
+                    {
+                        set = (set + 1) % imp.Length;
+                        LeftDown();
+                        PressButtonS(imp[set].Key);
+                        LeftUp();
+                        Thread.Sleep(imp[set].Sleep);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+namespace AutoclickMain
+{
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KeyboardInput
+    {
+        public ushort wVk;
+        public ushort wScan;
+        public uint dwFlags;
+        public uint time;
+        public IntPtr dwExtraInfo;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MouseInput
+    {
+        public int dx;
+        public int dy;
+        public uint mouseData;
+        public uint dwFlags;
+        public uint time;
+        public IntPtr dwExtraInfo;
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public struct HardwareInput
+    {
+        public uint uMsg;
+        public ushort wParamL;
+        public ushort wParamH;
+    }
+    [StructLayout(LayoutKind.Explicit)]
+    public struct InputUnion
+    {
+        [FieldOffset(0)] public MouseInput mi;
+        [FieldOffset(0)] public KeyboardInput ki;
+        [FieldOffset(0)] public HardwareInput hi;
+    }
+    public struct Input
+    {
+        public int type;
+        public InputUnion u;
+    }
+    [Flags]
+    public enum InputType
+    {
+        Mouse = 0,
+        Keyboard = 1,
+        Hardware = 2
+    }
+    [Flags]
+    public enum KeyEventF
+    {
+        KeyDown = 0x0000,
+        ExtendedKey = 0x0001,
+        KeyUp = 0x0002,
+        Unicode = 0x0004,
+        Scancode = 0x0008
+    }
+    [Flags]
+    public enum MouseEventF
+    {
+        Absolute = 0x8000,
+        HWheel = 0x01000,
+        Move = 0x0001,
+        MoveNoCoalesce = 0x2000,
+        LeftDown = 0x0002,
+        LeftUp = 0x0004,
+        RightDown = 0x0008,
+        RightUp = 0x0010,
+        MiddleDown = 0x0020,
+        MiddleUp = 0x0040,
+        VirtualDesk = 0x4000,
+        Wheel = 0x0800,
+        XDown = 0x0080,
+        XUp = 0x0100
+    }
+    public class GlobalKeyboardHookEventArgs : HandledEventArgs
+    {
+        public GlobalKeyboardHook.KeyboardState KeyboardState { get; private set; }
+        public GlobalKeyboardHook.LowLevelKeyboardInputEvent KeyboardData { get; private set; }
+
+        public GlobalKeyboardHookEventArgs(
+            GlobalKeyboardHook.LowLevelKeyboardInputEvent keyboardData,
+            GlobalKeyboardHook.KeyboardState keyboardState)
+        {
+            KeyboardData = keyboardData;
+            KeyboardState = keyboardState;
+        }
+    }
+
+    //Based on https://gist.github.com/Stasonix
+    public class GlobalKeyboardHook : IDisposable
+    {
+        public event EventHandler<GlobalKeyboardHookEventArgs> KeyboardPressed;
+
+        public GlobalKeyboardHook()
+        {
+            _windowsHookHandle = IntPtr.Zero;
+            _user32LibraryHandle = IntPtr.Zero;
+            _hookProc = LowLevelKeyboardProc; // we must keep alive _hookProc, because GC is not aware about SetWindowsHookEx behaviour.
+
+            _user32LibraryHandle = LoadLibrary("User32");
+            if (_user32LibraryHandle == IntPtr.Zero)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                throw new Win32Exception(errorCode, $"Failed to load library 'User32.dll'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+            }
+
+
+
+            _windowsHookHandle = SetWindowsHookEx(WH_KEYBOARD_LL, _hookProc, _user32LibraryHandle, 0);
+            if (_windowsHookHandle == IntPtr.Zero)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                throw new Win32Exception(errorCode, $"Failed to adjust keyboard hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // because we can unhook only in the same thread, not in garbage collector thread
+                if (_windowsHookHandle != IntPtr.Zero)
+                {
+                    if (!UnhookWindowsHookEx(_windowsHookHandle))
+                    {
+                        int errorCode = Marshal.GetLastWin32Error();
+                        throw new Win32Exception(errorCode, $"Failed to remove keyboard hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                    }
+                    _windowsHookHandle = IntPtr.Zero;
+
+                    // ReSharper disable once DelegateSubtraction
+                    _hookProc -= LowLevelKeyboardProc;
+                }
+            }
+
+            if (_user32LibraryHandle != IntPtr.Zero)
+            {
+                if (!FreeLibrary(_user32LibraryHandle)) // reduces reference to library by 1.
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(errorCode, $"Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                }
+                _user32LibraryHandle = IntPtr.Zero;
+            }
+        }
+
+        ~GlobalKeyboardHook()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private IntPtr _windowsHookHandle;
+        private IntPtr _user32LibraryHandle;
+        private HookProc _hookProc;
+
+        delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern bool FreeLibrary(IntPtr hModule);
+
+        /// <summary>
+        /// The SetWindowsHookEx function installs an application-defined hook procedure into a hook chain.
+        /// You would install a hook procedure to monitor the system for certain types of events. These events are
+        /// associated either with a specific thread or with all threads in the same desktop as the calling thread.
+        /// </summary>
+        /// <param name="idHook">hook type</param>
+        /// <param name="lpfn">hook procedure</param>
+        /// <param name="hMod">handle to application instance</param>
+        /// <param name="dwThreadId">thread identifier</param>
+        /// <returns>If the function succeeds, the return value is the handle to the hook procedure.</returns>
+        [DllImport("USER32", SetLastError = true)]
+        static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, int dwThreadId);
+
+        /// <summary>
+        /// The UnhookWindowsHookEx function removes a hook procedure installed in a hook chain by the SetWindowsHookEx function.
+        /// </summary>
+        /// <param name="hhk">handle to hook procedure</param>
+        /// <returns>If the function succeeds, the return value is true.</returns>
+        [DllImport("USER32", SetLastError = true)]
+        public static extern bool UnhookWindowsHookEx(IntPtr hHook);
+
+        /// <summary>
+        /// The CallNextHookEx function passes the hook information to the next hook procedure in the current hook chain.
+        /// A hook procedure can call this function either before or after processing the hook information.
+        /// </summary>
+        /// <param name="hHook">handle to current hook</param>
+        /// <param name="code">hook code passed to hook procedure</param>
+        /// <param name="wParam">value passed to hook procedure</param>
+        /// <param name="lParam">value passed to hook procedure</param>
+        /// <returns>If the function succeeds, the return value is true.</returns>
+        [DllImport("USER32", SetLastError = true)]
+        static extern IntPtr CallNextHookEx(IntPtr hHook, int code, IntPtr wParam, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LowLevelKeyboardInputEvent
+        {
+            /// <summary>
+            /// A virtual-key code. The code must be a value in the range 1 to 254.
+            /// </summary>
+            public int VirtualCode;
+
+            /// <summary>
+            /// A hardware scan code for the key. 
+            /// </summary>
+            public int HardwareScanCode;
+
+            /// <summary>
+            /// The extended-key flag, event-injected Flags, context code, and transition-state flag. This member is specified as follows. An application can use the following values to test the keystroke Flags. Testing LLKHF_INJECTED (bit 4) will tell you whether the event was injected. If it was, then testing LLKHF_LOWER_IL_INJECTED (bit 1) will tell you whether or not the event was injected from a process running at lower integrity level.
+            /// </summary>
+            public int Flags;
+
+            /// <summary>
+            /// The time stamp stamp for this message, equivalent to what GetMessageTime would return for this message.
+            /// </summary>
+            public int TimeStamp;
+
+            /// <summary>
+            /// Additional information associated with the message. 
+            /// </summary>
+            public IntPtr AdditionalInformation;
+        }
+
+        public const int WH_KEYBOARD_LL = 13;
+        //const int HC_ACTION = 0;
+
+        public enum KeyboardState
+        {
+            KeyDown = 0x0100,
+            KeyUp = 0x0101,
+            SysKeyDown = 0x0104,
+            SysKeyUp = 0x0105
+        }
+
+        public const int VkSnapshot = 0x2c;
+        //const int VkLwin = 0x5b;
+        //const int VkRwin = 0x5c;
+        //const int VkTab = 0x09;
+        //const int VkEscape = 0x18;
+        //const int VkControl = 0x11;
+        const int KfAltdown = 0x2000;
+        public const int LlkhfAltdown = (KfAltdown >> 8);
+
+        public IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            bool fEatKeyStroke = false;
+
+            var wparamTyped = wParam.ToInt32();
+            if (Enum.IsDefined(typeof(KeyboardState), wparamTyped))
+            {
+                object o = Marshal.PtrToStructure(lParam, typeof(LowLevelKeyboardInputEvent));
+                LowLevelKeyboardInputEvent p = (LowLevelKeyboardInputEvent)o;
+
+                var eventArguments = new GlobalKeyboardHookEventArgs(p, (KeyboardState)wparamTyped);
+
+                EventHandler<GlobalKeyboardHookEventArgs> handler = KeyboardPressed;
+                handler?.Invoke(this, eventArguments);
+
+                fEatKeyStroke = eventArguments.Handled;
+            }
+
+            return fEatKeyStroke ? (IntPtr)1 : CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+        }
+    }
+
+
+    public class GlobalMouseHookEventArgs : HandledEventArgs
+    {
+        public GlobalMouseHook.MouseState MouseState { get; private set; }
+        public GlobalMouseHook.LowLevelMouseInputEvent MouseData { get; private set; }
+
+        public GlobalMouseHookEventArgs(
+            GlobalMouseHook.LowLevelMouseInputEvent mouseData,
+            GlobalMouseHook.MouseState mouseState)
+        {
+            MouseData = mouseData;
+            MouseState = mouseState;
+        }
+    }
+
+    public class GlobalMouseHook : IDisposable
+    {
+        public event EventHandler<GlobalMouseHookEventArgs> MousePressed;
+
+        public GlobalMouseHook()
+        {
+            _windowsHookHandle = IntPtr.Zero;
+            _user32LibraryHandle = IntPtr.Zero;
+            _hookProc = LowLevelMouseProc; // we must keep alive _hookProc, because GC is not aware about SetWindowsHookEx behaviour.
+
+            _user32LibraryHandle = LoadLibrary("User32");
+            if (_user32LibraryHandle == IntPtr.Zero)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                throw new Win32Exception(errorCode, $"Failed to load library 'User32.dll'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+            }
+
+
+
+            _windowsHookHandle = SetWindowsHookEx(WH_MOUSE_LL, _hookProc, _user32LibraryHandle, 0);
+            if (_windowsHookHandle == IntPtr.Zero)
+            {
+                int errorCode = Marshal.GetLastWin32Error();
+                throw new Win32Exception(errorCode, $"Failed to adjust keyboard hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // because we can unhook only in the same thread, not in garbage collector thread
+                if (_windowsHookHandle != IntPtr.Zero)
+                {
+                    if (!UnhookWindowsHookEx(_windowsHookHandle))
+                    {
+                        int errorCode = Marshal.GetLastWin32Error();
+                        throw new Win32Exception(errorCode, $"Failed to remove keyboard hooks for '{Process.GetCurrentProcess().ProcessName}'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                    }
+                    _windowsHookHandle = IntPtr.Zero;
+
+                    // ReSharper disable once DelegateSubtraction
+                    _hookProc -= LowLevelMouseProc;
+                }
+            }
+
+            if (_user32LibraryHandle != IntPtr.Zero)
+            {
+                if (!FreeLibrary(_user32LibraryHandle)) // reduces reference to library by 1.
+                {
+                    int errorCode = Marshal.GetLastWin32Error();
+                    throw new Win32Exception(errorCode, $"Failed to unload library 'User32.dll'. Error {errorCode}: {new Win32Exception(Marshal.GetLastWin32Error()).Message}.");
+                }
+                _user32LibraryHandle = IntPtr.Zero;
+            }
+        }
+
+        ~GlobalMouseHook()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private IntPtr _windowsHookHandle;
+        private IntPtr _user32LibraryHandle;
+        private HookProc _hookProc;
+
+        delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll")]
+        private static extern IntPtr LoadLibrary(string lpFileName);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
+        private static extern bool FreeLibrary(IntPtr hModule);
+
+        /// <summary>
+        /// The SetWindowsHookEx function installs an application-defined hook procedure into a hook chain.
+        /// You would install a hook procedure to monitor the system for certain types of events. These events are
+        /// associated either with a specific thread or with all threads in the same desktop as the calling thread.
+        /// </summary>
+        /// <param name="idHook">hook type</param>
+        /// <param name="lpfn">hook procedure</param>
+        /// <param name="hMod">handle to application instance</param>
+        /// <param name="dwThreadId">thread identifier</param>
+        /// <returns>If the function succeeds, the return value is the handle to the hook procedure.</returns>
+        [DllImport("USER32", SetLastError = true)]
+        static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, int dwThreadId);
+
+        /// <summary>
+        /// The UnhookWindowsHookEx function removes a hook procedure installed in a hook chain by the SetWindowsHookEx function.
+        /// </summary>
+        /// <param name="hhk">handle to hook procedure</param>
+        /// <returns>If the function succeeds, the return value is true.</returns>
+        [DllImport("USER32", SetLastError = true)]
+        public static extern bool UnhookWindowsHookEx(IntPtr hHook);
+
+        /// <summary>
+        /// The CallNextHookEx function passes the hook information to the next hook procedure in the current hook chain.
+        /// A hook procedure can call this function either before or after processing the hook information.
+        /// </summary>
+        /// <param name="hHook">handle to current hook</param>
+        /// <param name="code">hook code passed to hook procedure</param>
+        /// <param name="wParam">value passed to hook procedure</param>
+        /// <param name="lParam">value passed to hook procedure</param>
+        /// <returns>If the function succeeds, the return value is true.</returns>
+        [DllImport("USER32", SetLastError = true)]
+        static extern IntPtr CallNextHookEx(IntPtr hHook, int code, IntPtr wParam, IntPtr lParam);
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct LowLevelMouseInputEvent
+        {
+            /// <summary>
+            /// A virtual-key code. The code must be a value in the range 1 to 254.
+            /// </summary>
+            public Point Pos;
+
+            /// <summary>
+            /// A hardware scan code for the key. 
+            /// </summary>
+            public int MouseData;
+
+            /// <summary>
+            /// The extended-key flag, event-injected Flags, context code, and transition-state flag. This member is specified as follows. An application can use the following values to test the keystroke Flags. Testing LLKHF_INJECTED (bit 4) will tell you whether the event was injected. If it was, then testing LLKHF_LOWER_IL_INJECTED (bit 1) will tell you whether or not the event was injected from a process running at lower integrity level.
+            /// </summary>
+            public int Flags;
+
+            /// <summary>
+            /// The time stamp stamp for this message, equivalent to what GetMessageTime would return for this message.
+            /// </summary>
+            public int TimeStamp;
+
+            /// <summary>
+            /// Additional information associated with the message. 
+            /// </summary>
+            public IntPtr AdditionalInformation;
+        }
+
+        public const int WH_MOUSE_LL = 14;
+        //const int HC_ACTION = 0;
+
+        public enum MouseState
+        {
+            LeftDblC = 0x0203,
+            LeftUp = 0x0202,
+            LeftDown = 0x0201,
+            MiddleDblC = 0x0209,
+            MiddleUp = 0x0208,
+            MiddleDown = 0x0207,
+            RightDblC = 0x0206,
+            RightUp = 0x0205,
+            RightDown = 0x0204,
+            SpecialDblC = 0x020B,
+            SpecialUp = 0x020C,
+            SpecialDown = 0x020A
+        }
+
+        public IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam)
+        {
+            bool fEatKeyStroke = false;
+
+            var wparamTyped = wParam.ToInt32();
+            object o = Marshal.PtrToStructure(lParam, typeof(LowLevelMouseInputEvent));
+            LowLevelMouseInputEvent p = (LowLevelMouseInputEvent)o;
+            Autoclicker.cursorPos = p.Pos;
+            //Debug.WriteLine(p.Pos);
+
+            var eventArguments = new GlobalMouseHookEventArgs(p, (MouseState)wparamTyped);
+
+            EventHandler<GlobalMouseHookEventArgs> handler = MousePressed;
+            handler?.Invoke(this, eventArguments);
+            //Debug.WriteLine((MouseState)wparamTyped);
+
+            fEatKeyStroke = eventArguments.Handled;
+
+            return fEatKeyStroke ? (IntPtr)1 : CallNextHookEx(IntPtr.Zero, nCode, wParam, lParam);
+        }
+    }
+
+
+
+
+
+
+
+
+
+    public abstract class Autoclicker
+    {
+        public Thread update;
+        public static Point cursorPos = new Point(0, 0);
+        private bool valid => (cursorPos.Y > 50) && (cursorPos.X > 10);
+        public bool Updating = false;
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern uint SendInput(uint nInputs, Input[] pInputs, int cbSize);
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetMessageExtraInfo();
+        [DllImport("user32.dll")]
+        private static extern ushort VkKeyScanA(char ch);
+        [DllImport("user32.dll")]
+        private static extern uint MapVirtualKeyA(uint uCode, uint uMapType);
+
+        [DllImport("user32.dll")]
+        public static extern bool GetCursorPos(ref Point lpPoint);
+
+        [DllImport("gdi32.dll", CharSet = CharSet.Auto, SetLastError = true, ExactSpelling = true)]
+        public static extern int BitBlt(IntPtr hDC, int x, int y, int nWidth, int nHeight, IntPtr hSrcDC, int xSrc, int ySrc, int dwRop);
+        Bitmap screenPixel = new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+        public static Dictionary<String, ushort> SpecialKeys = new Dictionary<String, ushort> {
+            {"Enter",0x0D},
+            {"Shift",0x10},
+            {"Ctrl",0x11},
+            {"Tab",0x09},
+            {"Backspace",0x08},
+            {"Delete",0x2E},
+            {"F1",0x70},
+            {"F2",0x71},
+            {"F3",0x72},
+            {"F4",0x73},
+            {"F5",0x74},
+            {"F6",0x75},
+            {"F7",0x76},
+            {"F8",0x77},
+            {"F9",0x78},
+            {"F10",0x79},
+            {"F11",0x7A},
+            {"F12",0x7B}
+        };
+        public Color GetColorAt(Point location)
+        {
+            using (Graphics gdest = Graphics.FromImage(screenPixel))
+            {
+                using (Graphics gsrc = Graphics.FromHwnd(IntPtr.Zero))
+                {
+                    IntPtr hSrcDC = gsrc.GetHdc();
+                    IntPtr hDC = gdest.GetHdc();
+                    int retval = BitBlt(hDC, 0, 0, 1, 1, hSrcDC, location.X, location.Y, (int)CopyPixelOperation.SourceCopy);
+                    gdest.ReleaseHdc();
+                    gsrc.ReleaseHdc();
+                }
+            }
+
+            return screenPixel.GetPixel(0, 0);
+        }
+        public BitmapData GrabScreenData(Rectangle bounds)
+        {
+            using (Bitmap bitmap = new Bitmap(bounds.Width, bounds.Height))
+            {
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    g.CopyFromScreen(new Point(bounds.Left, bounds.Top), Point.Empty, bounds.Size);
+                    BitmapData imageData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width,
+  bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
+
+                    return imageData;
+                }
+            }
+        }
+        public Input[] leftClick =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags = (uint)(MouseEventF.LeftDown),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            },
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags = (uint)(MouseEventF.LeftUp),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void LeftClick()
+        {
+            if (!valid) return;
+            SendInput((uint)2, leftClick, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] rightClick =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.RightDown),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            },
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.RightUp),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void RightClick()
+        {
+            if (!valid) return;
+            SendInput((uint)2, rightClick, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] middleClick =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.MiddleDown),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            },
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.MiddleUp),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void MiddleClick()
+        {
+            if (!valid) return;
+            SendInput((uint)2, middleClick, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] leftDown =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.LeftDown),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void LeftDown()
+        {
+            if (!valid) return;
+            SendInput((uint)1, leftDown, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] scrollUp =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.Wheel),
+                        mouseData = 120,
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void ScrollUp()
+        {
+            if (!valid) return;
+            SendInput((uint)1, scrollUp, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] scrollDown =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.Wheel),
+                        mouseData = 4294967175,
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void ScrollDown()
+        {
+            if (!valid) return;
+            SendInput((uint)1, scrollDown, Marshal.SizeOf(typeof(Input)));
+        }
+        public void MoveMouse(Point pos)
+        {
+            if (!valid) return;
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Mouse,
+                    u = new InputUnion
+                    {
+                        mi = new MouseInput
+                        {
+                            dwFlags =(uint) (MouseEventF.Move|MouseEventF.Absolute),
+                            dx = (pos.X*65535/Screen.PrimaryScreen.Bounds.Width)+1,
+                            dy = (pos.Y*65535/Screen.PrimaryScreen.Bounds.Height)+1,
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void MoveMouseN(Point pos)
+        {
+            if (!valid) return;
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Mouse,
+                    u = new InputUnion
+                    {
+                        mi = new MouseInput
+                        {
+                            dwFlags =(uint) (MouseEventF.Move),
+                            dx =pos.X,
+                            dy =pos.Y,
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] leftUp =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.LeftUp),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void LeftUp()
+        {
+            if (!valid) return;
+            SendInput((uint)1, leftUp, Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] middleDown =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.MiddleDown),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void MiddleDown()
+        {
+            if (!valid) return;
+            SendInput((uint)1, middleDown, Marshal.SizeOf(typeof(Input)));
+        }            
+        public Input[] middleUp =
+        {
+            new Input
+            {
+                type = (int)InputType.Mouse,
+                u = new InputUnion
+                {
+                    mi = new MouseInput
+                    {
+                        dwFlags =(uint) (MouseEventF.MiddleUp),
+                        dwExtraInfo = GetMessageExtraInfo()
+                    }
+                }
+            }
+        };
+        public void MiddleUp()
+        {
+            if (!valid) return;
+
+            SendInput((uint)1, middleUp, Marshal.SizeOf(typeof(Input)));
+        }
+        public void PressButtonV(ushort key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = key,
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyDown),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                },
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = key,
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void PressButtonV(char key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = VkKeyScanA(key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyDown),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                },
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = VkKeyScanA(key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void DownButtonV(ushort key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = key,
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyDown),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void DownButtonV(char key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = VkKeyScanA(key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyDown),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void UpButtonV(ushort key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = key,
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void UpButtonV(char key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = VkKeyScanA(key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void PressButtonS(ushort key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(key,0),
+                            dwFlags = (uint)(KeyEventF.KeyDown|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                },
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(key,0),
+                            dwFlags = (uint)(KeyEventF.KeyUp|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void PressButtonS(char key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(VkKeyScanA(key),0),
+                            dwFlags = (uint)(KeyEventF.KeyDown|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                },
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(VkKeyScanA(key),0),
+                            dwFlags = (uint)(KeyEventF.KeyUp|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void DownButtonS(ushort key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(key,0),
+                            dwFlags = (uint)(KeyEventF.KeyDown|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void DownButtonS(char key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(VkKeyScanA(key),0),
+                            dwFlags = (uint)(KeyEventF.KeyDown|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void UpButtonS(ushort key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(key,0),
+                            dwFlags = (uint)(KeyEventF.KeyUp|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void UpButtonS(char key)
+        {
+            var inputs = new Input[]
+            {
+                new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = 0,
+                            wScan = (ushort)MapVirtualKeyA(VkKeyScanA(key),0),
+                            dwFlags = (uint)(KeyEventF.KeyUp|KeyEventF.Scancode),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                }
+            };
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+        public void SendInputs(Input[] inputs)
+        {
+            SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(Input)));
+        }
+
+        public void TypeDownV(String str)
+        {
+            var lStr = str;
+            var inputs = new List<Input>();
+            bool shift = false;
+            bool shiftT = false;
+            for(int i=0; i< lStr.Length;i++)
+            {
+                ushort key = VkKeyScanA(lStr[i]);
+                if (((key>>8)&(0b1))==1)
+                {
+                    shift = true;
+                }
+                else
+                {
+                    shift = false;
+                }
+                if (shift&& !shiftT)
+                {
+                    shiftT = true;
+                    inputs.Add(new Input
+                    {
+                        type = (int)InputType.Keyboard,
+                        u = new InputUnion
+                        {
+                            ki = new KeyboardInput
+                            {
+                                wVk = SpecialKeys["Shift"],
+                                wScan = 0,
+                                dwFlags = (uint)(KeyEventF.KeyDown),
+                                dwExtraInfo = GetMessageExtraInfo()
+                            }
+                        }
+                    });
+                }
+                else if (!shift && shiftT)
+                {
+                    shiftT = false;
+                    inputs.Add(new Input
+                    {
+                        type = (int)InputType.Keyboard,
+                        u = new InputUnion
+                        {
+                            ki = new KeyboardInput
+                            {
+                                wVk = SpecialKeys["Shift"],
+                                wScan = 0,
+                                dwFlags = (uint)(KeyEventF.KeyUp),
+                                dwExtraInfo = GetMessageExtraInfo()
+                            }
+                        }
+                    });
+                }
+                inputs.Add(new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = (key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyDown),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                });
+                inputs.Add(new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = (key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                });
+            }
+            if (shiftT)
+            {
+                inputs.Add(new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = SpecialKeys["Shift"],
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                });
+            }
+            SendInput((uint)inputs.Count, inputs.ToArray(), Marshal.SizeOf(typeof(Input)));
+        }
+        public Input[] TypeGenerateV(String str)
+        {
+            var lStr = str;
+            var inputs = new List<Input>();
+            bool shift = false;
+            bool shiftT = false;
+            for (int i = 0; i < lStr.Length; i++)
+            {
+                ushort key = VkKeyScanA(lStr[i]);
+                if (((key >> 8) & (0b1)) == 1)
+                {
+                    shift = true;
+                }
+                else
+                {
+                    shift = false;
+                }
+                if (shift && !shiftT)
+                {
+                    shiftT = true;
+                    inputs.Add(new Input
+                    {
+                        type = (int)InputType.Keyboard,
+                        u = new InputUnion
+                        {
+                            ki = new KeyboardInput
+                            {
+                                wVk = SpecialKeys["Shift"],
+                                wScan = 0,
+                                dwFlags = (uint)(KeyEventF.KeyDown),
+                                dwExtraInfo = GetMessageExtraInfo()
+                            }
+                        }
+                    });
+                }
+                else if (!shift && shiftT)
+                {
+                    shiftT = false;
+                    inputs.Add(new Input
+                    {
+                        type = (int)InputType.Keyboard,
+                        u = new InputUnion
+                        {
+                            ki = new KeyboardInput
+                            {
+                                wVk = SpecialKeys["Shift"],
+                                wScan = 0,
+                                dwFlags = (uint)(KeyEventF.KeyUp),
+                                dwExtraInfo = GetMessageExtraInfo()
+                            }
+                        }
+                    });
+                }
+                inputs.Add(new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = (key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyDown),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                });
+                inputs.Add(new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = (key),
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                });
+            }
+            if (shiftT)
+            {
+                inputs.Add(new Input
+                {
+                    type = (int)InputType.Keyboard,
+                    u = new InputUnion
+                    {
+                        ki = new KeyboardInput
+                        {
+                            wVk = SpecialKeys["Shift"],
+                            wScan = 0,
+                            dwFlags = (uint)(KeyEventF.KeyUp),
+                            dwExtraInfo = GetMessageExtraInfo()
+                        }
+                    }
+                });
+            }
+            return inputs.ToArray();
+        }
+        public static void GroupDisable(KeyboardConnect[] group)
+        {
+            foreach (KeyboardConnect connect in group)
+            {
+                connect.Disable();
+            }
+        }
+        public static void GroupEnable(KeyboardConnect[] group)
+        {
+            foreach (KeyboardConnect connect in group)
+            {
+                connect.Enable();
+            }
+        }
+        public static void GroupToggle(KeyboardConnect[] group)
+        {
+            foreach (KeyboardConnect connect in group)
+            {
+                connect.Toggle();
+            }
+        }
+        public abstract void Start();
+        public abstract void Enable();
+        public abstract void Disable();
+        public abstract void Update();
+    }
+    public class Controller : IDisposable
+    {
+        public GlobalKeyboardHook _globalKeyboardHook;
+        public GlobalMouseHook _globalMouseHook;
+
+        public void SetupHooks()
+        {
+            Debug.WriteLine("Hooks Setup");
+            _globalKeyboardHook = new();
+            _globalMouseHook = new();
+        }
+
+        public void Dispose()
+        {
+            Debug.WriteLine("Disposed");
+            _globalKeyboardHook?.Dispose();
+            _globalMouseHook?.Dispose();
+        }
+    }
+    public class KeyboardConnect
+    {
+        [DllImport("user32.dll")]
+        private static extern ushort VkKeyScanA(char ch);
+
+        private Controller _main;
+        private ushort Key;
+        private bool Cancel = false;
+        private bool Enabled = false;
+        private bool IsKeyDown = false;
+
+        public delegate void KeyDown(GlobalKeyboardHookEventArgs e);
+        public delegate void KeyUp(GlobalKeyboardHookEventArgs e);
+        private KeyDown keyDown;
+        private KeyUp keyUp;
+        public KeyboardConnect(Controller controller, ushort key)
+        {
+            _main = controller;
+            Key = key;
+        }
+        public KeyboardConnect(Controller controller, char key)
+        {
+            _main = controller;
+            Key = VkKeyScanA(key);
+        }
+        private void _onKeyPress(object sender, GlobalKeyboardHookEventArgs e)
+        {
+            //Debug.WriteLine(e.KeyboardData.VirtualCode);
+            if ((ushort)e.KeyboardData.VirtualCode == Key)
+            {
+                if (e.KeyboardState == GlobalKeyboardHook.KeyboardState.KeyDown)
+                {
+                    if (!IsKeyDown)
+                    {
+                        keyDown?.Invoke(e);
+                    }
+                    IsKeyDown = true;
+                    if (Cancel) e.Handled = true;
+                }
+                if (e.KeyboardState == GlobalKeyboardHook.KeyboardState.KeyUp)
+                {
+                    if (IsKeyDown)
+                    {
+                        keyUp?.Invoke(e);
+                    }
+                    IsKeyDown = false;
+                    if (Cancel) e.Handled = true;
+                }
+            }
+        }
+        public void SetOnKeyDown(KeyDown keyd)
+        {
+            keyDown = keyd;
+        }
+        public void SetOnKeyUp(KeyUp keyu)
+        {
+            keyUp = keyu;
+        }
+        public void Enable()
+        {
+            if (!Enabled)
+            {
+                Enabled = true;
+                _main._globalKeyboardHook.KeyboardPressed += _onKeyPress;
+            }
+        }
+        public void Disable()
+        {
+            if (Enabled)
+            {
+                Enabled = false;
+                _main._globalKeyboardHook.KeyboardPressed -= _onKeyPress;
+            }
+        }
+        public void Toggle()
+        {
+            if (Enabled)
+            {
+                Enabled = true;
+                _main._globalKeyboardHook.KeyboardPressed += _onKeyPress;
+            }
+            else
+            {
+                Enabled = false;
+                _main._globalKeyboardHook.KeyboardPressed -= _onKeyPress;
+            }
+        }
+        public void SetCancel(bool set)
+        {
+            Cancel = set;
+        }
+    }
+    public class MouseConnect
+    {
+        public const int X2 = 131072;
+        public const int X1 = 65536;
+        private Controller _main;
+        private MouseButton mb;
+        private bool IsDown = false;
+        private bool Cancel = false;
+        private bool Enabled = false;
+
+        public delegate void MDown(GlobalMouseHookEventArgs e);
+        public delegate void MUp(GlobalMouseHookEventArgs e);
+        public delegate void MDblc(GlobalMouseHookEventArgs e);
+        private MDown mDown;
+        private MUp mUp;
+        private MDblc mDblc;
+        public MouseConnect(Controller controller, MouseButton Mouse)
+        {
+            _main = controller;
+            mb = Mouse;
+        }
+        private void _onMousePress(object sender, GlobalMouseHookEventArgs e)
+        {
+            if ((ushort)e.MouseState==mb.Down&&!IsDown)
+            {
+                if (mb.GetType() == typeof(SpecialM))
+                {
+                    if ((e.MouseData.MouseData != ((SpecialM)mb).Button)) return;
+                }
+                IsDown = true;
+                mDown?.Invoke(e);
+                if (Cancel)
+                {
+                    e.Handled = true;
+                }
+            }else if ((ushort)e.MouseState == mb.Up && IsDown)
+            {
+                if (mb.GetType() == typeof(SpecialM))
+                {
+                    if ((e.MouseData.MouseData != ((SpecialM)mb).Button)) return;
+                }
+                IsDown = false;
+                mUp?.Invoke(e);
+                if (Cancel)
+                {
+                    e.Handled = true;
+                }
+            }else if ((ushort)e.MouseState == mb.DblC)
+            {
+                if (mb.GetType() == typeof(SpecialM))
+                {
+                    if ((e.MouseData.MouseData != ((SpecialM)mb).Button)) return;
+                }
+                IsDown = true;
+                mDblc?.Invoke(e);
+                if (Cancel)
+                {
+                    e.Handled = true;
+                }
+            }
+        }
+        public void SetOnDown(MDown keyd)
+        {
+            mDown = keyd;
+        }
+        public void SetOnUp(MUp keyd)
+        {
+            mUp = keyd;
+        }
+        public void SetOnDblc(MDblc keyd)
+        {
+            mDblc = keyd;
+        }
+        public void Enable()
+        {
+            if (!Enabled)
+            {
+                Enabled = true;
+                _main._globalMouseHook.MousePressed += _onMousePress;
+                Debug.WriteLine("Enabled");
+            }
+        }
+        public void Disable()
+        {
+            if (Enabled)
+            {
+                Enabled = false;
+                _main._globalMouseHook.MousePressed -= _onMousePress;
+            }
+        }
+        public void Toggle()
+        {
+            if (!Enabled)
+            {
+                Enabled = true;
+                _main._globalMouseHook.MousePressed += _onMousePress;
+            }
+            else
+            {
+                Enabled = false;
+                _main._globalMouseHook.MousePressed -= _onMousePress;
+            }
+        }
+        public void SetCancel(bool set)
+        {
+            Cancel = set;
+        }
+    }
+    public abstract class MouseButton
+    {
+        public abstract ushort DblC { get; }
+        public abstract ushort Up { get; }
+        public abstract ushort Down { get; }
+    }
+    public class LeftM : MouseButton
+    {
+        public override ushort DblC { get; } = 0x0203;
+        public override ushort Up { get; } = 0x0202;
+        public override ushort Down { get; } = 0x0201;
+    }
+    public class MiddleM : MouseButton
+    {
+        public override ushort DblC { get; } = 0x0209;
+        public override ushort Up { get; } = 0x0208;
+        public override ushort Down { get; } = 0x0207;
+    }
+    public class RightM : MouseButton
+    {
+        public override ushort DblC { get; } = 0x0206;
+        public override ushort Up { get; } = 0x0205;
+        public override ushort Down { get; } = 0x0204;
+    }
+    public class SpecialM : MouseButton
+    {
+        public override ushort DblC { get; } = 0x020B;
+        public override ushort Up { get; } = 0x020C;
+        public override ushort Down { get; } = 0x020A;
+        public int Button { get; private set; }
+        public SpecialM(int button)
+        {
+            Button = button;
+        }
+    }
+}
